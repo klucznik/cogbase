@@ -83,6 +83,11 @@ abstract class Type {
 			return $item;
 		}
 
+		//convert stringy to string
+		if ($type == Type::STRING && $item instanceof \Stringy\Stringy) {
+			return (string)$item;
+		}
+
 		if ($item instanceof $type) {
 			return $item;
 		}
@@ -129,14 +134,15 @@ abstract class Type {
 				//$original = $item;
 				settype($item, $type);
 
-				/*					// Check to make sure the value hasn't changed significantly
-									$test = $item;
-									settype($test, gettype($original));
-				
-									// Has it?
-									if ($test != $original)
-										// Yes -- therefore this is an invalid cast
-										throw new InvalidCastException(sprintf('Unable to cast %s value to %s: %s', $itemType, $type, $original));*/
+				/*
+				// Check to make sure the value hasn't changed significantly
+				$test = $item;
+				settype($test, gettype($original));
+
+				// Has it?
+				if ($test != $original)
+					// Yes -- therefore this is an invalid cast
+					throw new InvalidCastException(sprintf('Unable to cast %s value to %s: %s', $itemType, $type, $original));*/
 
 				return $item;
 
@@ -163,10 +169,6 @@ abstract class Type {
 		// Automatically Return NULLs
 		if (is_null($item))
 			return null;
-
-		//convert stringy to string
-		if (is_subclass_of($item, '\Stringy\Stringy'))
-			$item = (string)$item;
 
 		// Figure out what PHP thinks the type is
 		$strPhpType = gettype($item);
