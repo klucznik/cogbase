@@ -1,6 +1,7 @@
 {
   "name": "klucznik/cogbase",
-  "version": "0.0.1",
+  "license": "MIT",
+  "description": "Base package providing type casting, utils and exceptions for use in other cog packages",
   "require": {
     "php": ">=5.4",
     "nesbot/carbon": "^1.21.0",

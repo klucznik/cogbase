@@ -139,7 +139,6 @@ abstract class Type {
 				return $item;
 
 			case Type::STRING:
-				//$original = $item;
 				settype($item, $type);
 
 				/*
@@ -150,7 +149,8 @@ abstract class Type {
 				// Has it?
 				if ($test != $original)
 					// Yes -- therefore this is an invalid cast
-					throw new InvalidCastException(sprintf('Unable to cast %s value to %s: %s', $itemType, $type, $original));*/
+					throw new InvalidCastException(sprintf('Unable to cast %s value to %s: %s', $itemType, $type, $original));
+				*/
 
 				return $item;
 

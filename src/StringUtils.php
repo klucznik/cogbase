@@ -1,8 +1,5 @@
 <?php namespace Cog;
 
-use Cog;
-use QApplication;
-
 /**
  * An abstract utility class to handle string manipulation.  All methods
  * are statically available.
@@ -123,7 +120,7 @@ abstract class StringUtils {
 	 * @return string the html escaped string
 	 */
 	public static function htmlEntities($text) {
-		return htmlentities($text, ENT_IGNORE, QApplication::$EncodingType);
+		return htmlentities($text, ENT_IGNORE, 'UTF-8');
 	}
 
 	/**
