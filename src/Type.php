@@ -3,6 +3,8 @@
 use Cog\Exceptions\InvalidCastException;
 use ReflectionClass;
 use ReflectionException;
+use Carbon\Carbon;
+use Stringy\Stringy;
 
 /**
  * Type Library to add some support for strongly named types.
@@ -53,8 +55,9 @@ abstract class Type {
 
 	private static function castObjectTo($item, $type) {
 		$reflection = new ReflectionClass($item);
+
 		try {
-			if ($reflection->getName() == 'SimpleXMLElement') {
+			if ($reflection->getName() === 'SimpleXMLElement') {
 				switch ($type) {
 					case Type::STRING:
 						return (string)$item;
@@ -69,22 +72,17 @@ abstract class Type {
 
 					case Type::BOOLEAN:
 						$strItem = strtolower(trim((string)$item));
-						if (($strItem == 'false') ||
-							(!$strItem)
-						)
-							return false;
-						else
-							return true;
+						return ($strItem !== 'false' || !$strItem);
 				}
 			}
 		} catch (Exception $objExc) {}
 
-		if ($type == Type::DATETIME && $item instanceof \Carbon\Carbon) {
+		if ($type === Type::DATETIME && $item instanceof Carbon) {
 			return $item;
 		}
 
 		//convert stringy to string
-		if ($type == Type::STRING && $item instanceof \Stringy\Stringy) {
+		if ($type === Type::STRING && $item instanceof Stringy) {
 			return (string)$item;
 		}
 
@@ -100,21 +98,30 @@ abstract class Type {
 
 		switch ($type) {
 			case Type::BOOLEAN:
-				if ($itemType == Type::BOOLEAN)
+				if ($itemType === Type::BOOLEAN) {
 					return $item;
-				if (is_null($item))
+				}
+
+				if (null === $item) {
 					return false;
-				if (strlen($item) == 0)
+				}
+
+				if ($item === '') {
 					return false;
-				if (strtolower($item) == 'false')
+				}
+
+				if (strtolower($item) === 'false') {
 					return false;
+				}
+
 				settype($item, $type);
 				return $item;
 
 			case Type::INTEGER:
 			case Type::FLOAT:
-				if (strlen($item) == 0)
+				if ($item === '') {
 					return null;
+				}
 
 				$original = $item;
 				settype($item, $type);
@@ -124,9 +131,10 @@ abstract class Type {
 				settype($mixTest, gettype($original));
 
 				// Has it?
-				if ($mixTest != $original)
+				if ($mixTest != $original) {
 					// Yes -- therefore this is an invalid cast
 					throw new InvalidCastException(sprintf('Unable to cast %s value to %s: %s', $itemType, $type, $original));
+				}
 
 				return $item;
 
@@ -167,8 +175,9 @@ abstract class Type {
 	 */
 	public final static function cast($item, $type) {
 		// Automatically Return NULLs
-		if (is_null($item))
+		if (null === $item) {
 			return null;
+		}
 
 		// Figure out what PHP thinks the type is
 		$strPhpType = gettype($item);
@@ -195,10 +204,11 @@ abstract class Type {
 
 			case Type::ARRAYTYPE:
 				try {
-					if ($type == Type::ARRAYTYPE)
+					if ($type === Type::ARRAYTYPE) {
 						return $item;
-					else
+					} else {
 						throw new InvalidCastException(sprintf('Unable to cast Array to %s', $type));
+					}
 				} catch (\Cog\Exception $objExc) {
 					$objExc->incrementOffset();
 					throw $objExc;

@@ -10,11 +10,9 @@ use ReflectionClass;
  */
 abstract class Base {
 	/**
-	 * Override method to perform a property "Get"
-	 * This will get the value of $strName
+	 * Override method to perform a property "Get" This will get the value of $strName
 	 * All inherited objects that call __get() should always fall through
-	 * to calling parent::__get() in a try/catch statement catching
-	 * for CallerExceptions.
+	 * to calling parent::__get() in a try/catch statement catching for CallerExceptions.
 	 *
 	 * @param string $name Name of the property to get
 	 * @return mixed the returned property
@@ -22,15 +20,14 @@ abstract class Base {
 	 */
 	public function __get($name) {
 		$reflection = new ReflectionClass($this);
-		throw new UndefinedPropertyException("GET", $reflection->getName(), $name);
+		throw new UndefinedPropertyException('GET', $reflection->getName(), $name);
 	}
 
 	/**
 	 * Override method to perform a property "Set"
 	 * This will set the property $strName to be $mixValue
 	 * All inherited objects that call __set() should always fall through
-	 * to calling parent::__set() in a try/catch statement catching
-	 * for CallerExceptions.
+	 * to calling parent::__set() in a try/catch statement catching for CallerExceptions.
 	 *
 	 * @param string $name Name of the property to set
 	 * @param string $value New value of the property
@@ -39,7 +36,7 @@ abstract class Base {
 	 */
 	public function __set($name, $value) {
 		$reflection = new ReflectionClass($this);
-		throw new UndefinedPropertyException("SET", $reflection->getName(), $name);
+		throw new UndefinedPropertyException('SET', $reflection->getName(), $name);
 	}
 
 	/**
@@ -71,21 +68,24 @@ abstract class Base {
 						}
 				} else {
 					// Extract the Key and Value for this OverrideAttribute
-					$position = strpos($overrideItem, "=");
-					if ($position === false)
-						throw new \Cog\Exception(sprintf("Improperly formatted OverrideAttribute: %s", $overrideItem));
+					$position = strpos($overrideItem, '=');
+					if ($position === false) {
+						throw new \Cog\Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
+					}
 					$key = substr($overrideItem, 0, $position);
 					$value = substr($overrideItem, $position + 1);
 
 					// Ensure that the Value is properly formatted (unquoted, single-quoted, or double-quoted)
-					if (substr($value, 0, 1) == "'") {
-						if (substr($value, strlen($value) - 1) != "'")
-							throw new \Cog\Exception(sprintf("Improperly formatted OverrideAttribute: %s", $overrideItem));
-						$value = substr($value, 1, strlen($value) - 2);
-					} else if (substr($value, 0, 1) == '"') {
-						if (substr($value, strlen($value) - 1) != '"')
-							throw new \Cog\Exception(sprintf("Improperly formatted OverrideAttribute: %s", $overrideItem));
-						$value = substr($value, 1, strlen($value) - 2);
+					if (StringUtils::firstCharacter($value) === "'") {
+						if (substr($value, -1) !== "'") {
+							throw new \Cog\Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
+						}
+						$value = substr($value, 1, -2);
+					} elseif (StringUtils::firstCharacter($value) === '"') {
+						if (substr($value, -1) !== '"') {
+							throw new \Cog\Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
+						}
+						$value = substr($value, 1, -2);
 					}
 
 					// Apply the override

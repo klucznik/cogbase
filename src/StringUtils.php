@@ -15,24 +15,33 @@ abstract class StringUtils {
 	 * @return string the first character, or null
 	 */
 	public final static function firstCharacter($string) {
-		if (mb_strlen($string) > 0)
+		if (mb_strlen($string) > 0) {
 			return mb_substr($string, 0, 1);
-		else
-			return null;
+		}
+		return null;
 	}
 
 	/**
-	 * Returns the last character of a given string, or null if the given
-	 * string is null.
+	 * Returns the last character of a given string, or null if the given string is null.
 	 * @param string $string
 	 * @return string the last character, or null
 	 */
 	public final static function lastCharacter($string) {
 		$length = mb_strlen($string);
-		if ($length > 0)
+		if ($length > 0) {
 			return mb_substr($string, $length - 1);
-		else
-			return null;
+		}
+		return null;
+	}
+
+	/**
+	 * Checks if begins with the given string
+	 * @param string $haystack input string
+	 * @param string $needle beginning of the string to test against
+	 * @return boolean
+	 */
+	public final static function beginsWith($haystack, $needle) {
+		return 0 === mb_strpos($haystack, $needle);
 	}
 
 	/**
@@ -55,34 +64,39 @@ abstract class StringUtils {
 	 * Given an integer that represents a byte size, this will return a string
 	 * displaying the value in bytes, KB, MB, GB, TB or PB
 	 * @param integer $bytes
+	 * @param integer $numberOfTenths
 	 * @return string
 	 */
 	public static function getByteSize($bytes, $numberOfTenths = 1) {
-		if (is_null($bytes))
+		if (null === $bytes) {
 			return _t('qcodo.notAvailable');
-		if ($bytes == 0)
+		}
+
+		if ($bytes === 0) {
 			return '0 bytes';
+		}
 
 		$toReturn = '';
 		if ($bytes < 0) {
-			$bytes = $bytes * -1;
+			$bytes *= -1;
 			$toReturn .= '-';
 		}
 
-		if ($bytes == 1)
+		if ($bytes === 1) {
 			$toReturn = '1 byte';
-		else if ($bytes < 1024)
+		} elseif ($bytes < 1024) {
 			$toReturn .= $bytes . ' bytes';
-		else if ($bytes < (1024 * 1024))
-			$toReturn .= sprintf('%.' . $numberOfTenths . 'f KB', $bytes / (1024));
-		else if ($bytes < (1024 * 1024 * 1024))
+		} elseif ($bytes < (1024 * 1024)) {
+			$toReturn .= sprintf('%.' . $numberOfTenths . 'f KB', $bytes / 1024);
+		} elseif ($bytes < (1024 * 1024 * 1024)) {
 			$toReturn .= sprintf('%.' . $numberOfTenths . 'f MB', $bytes / (1024 * 1024));
-		else if ($bytes < (1024 * 1024 * 1024 * 1024))
+		} elseif ($bytes < (1024 * 1024 * 1024 * 1024)) {
 			$toReturn .= sprintf('%.' . $numberOfTenths . 'f GB', $bytes / (1024 * 1024 * 1024));
-		else if ($bytes < (1024 * 1024 * 1024 * 1024 * 1024))
+		} elseif ($bytes < (1024 * 1024 * 1024 * 1024 * 1024)) {
 			$toReturn .= sprintf('%.' . $numberOfTenths . 'f TB', $bytes / (1024 * 1024 * 1024 * 1024));
-		else
+		} else {
 			$toReturn .= sprintf('%.' . $numberOfTenths . 'f PB', $bytes / (1024 * 1024 * 1024 * 1024 * 1024));
+		}
 
 		return $toReturn;
 	}
@@ -95,11 +109,8 @@ abstract class StringUtils {
 	 * @return boolean
 	 */
 	public static function isLengthBetween($string, $minimumLength, $maximumLength) {
-		$intStringLength = mb_strlen($string);
-		if (($intStringLength < $minimumLength) || ($intStringLength > $maximumLength))
-			return false;
-		else
-			return true;
+		$length = mb_strlen($string);
+		return (($length >= $minimumLength) || ($length <= $maximumLength));
 	}
 
 	/**
@@ -115,18 +126,28 @@ abstract class StringUtils {
 		return htmlentities($text, ENT_IGNORE, QApplication::$EncodingType);
 	}
 
-	public static function contains($string, $needle) {
-		if (strpos($string, $needle) !== false)
-			return true;
-
-		return false;
+	/**
+	 * Returns true if the string contains $needle, false otherwise. By default
+	 * the comparison is case-sensitive, but can be made insensitive by setting
+	 * $caseSensitive to false.
+	 *
+	 * @param  string $haystack      input string
+	 * @param  string $needle        Substring to look for
+	 * @param  bool   $caseSensitive Whether or not to enforce case-sensitivity
+	 *
+	 * @return bool   Whether or not $haystack contains $needle
+	 */
+	public static function contains($haystack, $needle, $caseSensitive = true) {
+		if ($caseSensitive) {
+			return (\mb_strpos($haystack, $needle, 0) !== false);
+		}
+		return (\mb_stripos($haystack, $needle, 0) !== false);
 	}
 
 	public static function highlightWords($string, $highlightWords) {
 		foreach ($highlightWords as $strWord) {
 			$string = str_ireplace($strWord, '<b>' . $strWord . '</b>', $string);
 		}
-
 		return $string;
 	}
 }

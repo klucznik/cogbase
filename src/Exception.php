@@ -62,41 +62,49 @@ class Exception extends \Exception {
 		$this->offset = $offset;
 		$this->traceArray = debug_backtrace();
 
-		$this->file = $this->traceArray[$this->offset]['file'];
-		$this->line = $this->traceArray[$this->offset]['line'];
+		if ( array_key_exists('file', $this->traceArray[$this->offset])) {
+			$this->file = $this->traceArray[$this->offset]['file'];
+		}
+		if ( array_key_exists('line', $this->traceArray[$this->offset])) {
+			$this->line = $this->traceArray[$this->offset]['line'];
+		}
 	}
 
 	public function incrementOffset() {
 		$this->offset++;
-		if (array_key_exists('file', $this->traceArray[$this->offset]))
+		$this->file = '';
+		$this->line = '';
+
+		if (array_key_exists('file', $this->traceArray[$this->offset])) {
 			$this->file = $this->traceArray[$this->offset]['file'];
-		else
-			$this->file = '';
-		if (array_key_exists('line', $this->traceArray[$this->offset]))
+		}
+
+		if (array_key_exists('line', $this->traceArray[$this->offset])) {
 			$this->line = $this->traceArray[$this->offset]['line'];
-		else
-			$this->line = '';
+		}
 	}
 
 	public function decrementOffset() {
 		$this->offset--;
-		if (array_key_exists('file', $this->traceArray[$this->offset]))
+		$this->file = '';
+		$this->line = '';
+
+		if (array_key_exists('file', $this->traceArray[$this->offset])) {
 			$this->file = $this->traceArray[$this->offset]['file'];
-		else
-			$this->file = '';
-		if (array_key_exists('line', $this->traceArray[$this->offset]))
+		}
+
+		if (array_key_exists('line', $this->traceArray[$this->offset])) {
 			$this->line = $this->traceArray[$this->offset]['line'];
-		else
-			$this->line = '';
+		}
 	}
 
 	public function __get($strName) {
-		if ($strName == "Offset")
+		if ($strName === 'Offset') {
 			return $this->offset;
-		else if ($strName == "BackTrace") {
+		} elseif ($strName === 'BackTrace') {
 			$objTraceArray = debug_backtrace();
-			return (var_export($objTraceArray, true));
-		} else if ($strName == "TraceArray") {
+			return var_export($objTraceArray, true);
+		} else if ($strName === 'TraceArray') {
 			return $this->traceArray;
 		}
 
