@@ -107,7 +107,7 @@ abstract class StringUtils {
 	 */
 	public static function isLengthBetween($string, $minimumLength, $maximumLength) {
 		$length = mb_strlen($string);
-		return ($length > $minimumLength && $length < $maximumLength);
+		return ($length >= $minimumLength && $length <= $maximumLength);
 	}
 
 	/**
