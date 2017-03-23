@@ -7,9 +7,9 @@ use Stringy\Stringy;
 /**
  * Type Library to add some support for strongly named types.
  *
- * PHP does not support strongly named types.  The Qcodo type library
- * and Qcodo typing in general attempts to bring some structure to types
- * when passing in values, properties, parameters to/from Qcodo framework objects
+ * PHP does not support strongly named types.  The type library
+ * and typing in general attempts to bring some structure to types
+ * when passing in values, properties, parameters to/from framework objects
  * and methods.
  *
  * The Type library attempts to allow as much flexibility as possible to
@@ -25,15 +25,15 @@ use Stringy\Stringy;
  * is not a true cast, Type::Cast does at least ensure that the tap being "casted"
  * to is a legitimate subclass of the object being "cast".  So if you have ParentClass,
  * and you have a ChildClass that extends ParentClass,
- *        $objChildClass = new ChildClass();
- *        $objParentClass = new ParentClass();
- *        Type::Cast($objChildClass, 'ParentClass'); // is a legal cast
- *        Type::Cast($objParentClass, 'ChildClass'); // will throw an InvalidCastException
+ *        $childClass = new ChildClass();
+ *        $parentClass = new ParentClass();
+ *        Type::Cast($childClass, 'ParentClass'); // is a legal cast
+ *        Type::Cast($parentClass, 'ChildClass'); // will throw an InvalidCastException
  *
  * For values, specifically int to string conversion, one different between
  * Type::Cast and PHP (in order to add structure) is that if an integer contains
  * alpha characters, PHP would normally allow that through w/o complaint, simply
- * ignoring any numeric characters past the first alpha character.  Type::Cast
+ * ignoring any numeric characters past the first alpha character. Type::Cast
  * would instead throw an InvalidCastException to let the developer immediately
  * know that something does not look right.
  *
@@ -57,30 +57,30 @@ abstract class Type {
 		try {
 			if ($reflection->getName() === 'SimpleXMLElement') {
 				switch ($type) {
-					case Type::STRING:
+					case self::STRING:
 						return (string)$item;
 
-					case Type::INTEGER:
+					case self::INTEGER:
 						try {
-							return Type::cast((string)$item, Type::INTEGER);
+							return self::cast((string)$item, self::INTEGER);
 						} catch (Exception $exception) {
 							$exception->incrementOffset();
 							throw $exception;
 						}
 
-					case Type::BOOLEAN:
+					case self::BOOLEAN:
 						$item = strtolower(trim((string)$item));
 						return ($item !== 'false' || !$item);
 				}
 			}
 		} catch (Exception $exception) {}
 
-		if ($type === Type::DATETIME && $item instanceof Carbon) {
+		if ($type === self::DATETIME && $item instanceof Carbon) {
 			return $item;
 		}
 
 		//convert stringy to string
-		if ($type === Type::STRING && $item instanceof Stringy) {
+		if ($type === self::STRING && $item instanceof Stringy) {
 			return (string)$item;
 		}
 
@@ -95,8 +95,8 @@ abstract class Type {
 		$itemType = gettype($item);
 
 		switch ($type) {
-			case Type::BOOLEAN:
-				if ($itemType === Type::BOOLEAN) {
+			case self::BOOLEAN:
+				if ($itemType === self::BOOLEAN) {
 					return $item;
 				}
 
@@ -115,8 +115,8 @@ abstract class Type {
 				settype($item, $type);
 				return $item;
 
-			case Type::INTEGER:
-			case Type::FLOAT:
+			case self::INTEGER:
+			case self::FLOAT:
 				if ($item === '') {
 					return null;
 				}
@@ -136,7 +136,7 @@ abstract class Type {
 
 				return $item;
 
-			case Type::STRING:
+			case self::STRING:
 				settype($item, $type);
 
 				/*
@@ -167,7 +167,7 @@ abstract class Type {
 	 * thrown will be an InvalidCastException, which extends CallerException.
 	 *
 	 * @param mixed $item the value, array or object that you want to cast
-	 * @param string $type the type to cast to.  Can be a Type::XXX constant (e.g. Type::Integer), or the name of a Class
+	 * @param string $type the type to cast to.  Can be a Type::XXX constant (e.g. Type::INTEGER), or the name of a Class
 	 * @return mixed the passed in value/array/object that has been cast to strType
 	 * @throws \Cog\Exception
 	 */
@@ -179,7 +179,7 @@ abstract class Type {
 
 		// Figure out what PHP thinks the type is
 		switch (gettype($item)) {
-			case Type::OBJECT:
+			case self::OBJECT:
 				try {
 					return self::castObjectTo($item, $type);
 				} catch (Exception $exception) {
@@ -187,20 +187,20 @@ abstract class Type {
 					throw $exception;
 				}
 
-			case Type::STRING:
-			case Type::INTEGER:
-			case Type::FLOAT:
-			case Type::BOOLEAN:
+			case self::STRING:
+			case self::INTEGER:
+			case self::FLOAT:
+			case self::BOOLEAN:
 				try {
-					return Type::castValueTo($item, $type);
+					return self::castValueTo($item, $type);
 				} catch (Exception $exception) {
 					$exception->incrementOffset();
 					throw $exception;
 				}
 
-			case Type::ARRAYTYPE:
+			case self::ARRAYTYPE:
 				try {
-					if ($type === Type::ARRAYTYPE) {
+					if ($type === self::ARRAYTYPE) {
 						return $item;
 					}
 					throw new InvalidCastException(sprintf('Unable to cast Array to %s', $type));
@@ -215,32 +215,32 @@ abstract class Type {
 	}
 
 	/**
-	 * Used by the Qcodo Code Generator to allow for the code generation of
-	 * the actual "Type::Xxx" constant, instead of the text of the constant,
+	 * Used by the Code Generator to allow for the code generation of
+	 * the actual "Type::XXX" constant, instead of the text of the constant,
 	 * in generated code.
 	 *
 	 * It is rare for Constant to be used manually outside of Code Generation.
 	 *
 	 * @param string $type the type to convert to 'constant' form
-	 * @return string the text of the Text:Xxx Constant
+	 * @return string the text of the Type:XXX Constant
 	 * @throws InvalidCastException
 	 */
 	public final static function constant($type) {
 		switch ($type) {
-			case Type::OBJECT:
-				return 'Type::OBJECT';
-			case Type::STRING:
-				return 'Type::STRING';
-			case Type::INTEGER:
-				return 'Type::INTEGER';
-			case Type::FLOAT:
-				return 'Type::FLOAT';
-			case Type::BOOLEAN:
-				return 'Type::BOOLEAN';
-			case Type::ARRAYTYPE:
-				return 'Type::ARRAYTYPE';
-			case Type::DATETIME:
-				return 'Type::DATETIME';
+			case self::OBJECT:
+				return 'self::OBJECT';
+			case self::STRING:
+				return 'self::STRING';
+			case self::INTEGER:
+				return 'self::INTEGER';
+			case self::FLOAT:
+				return 'self::FLOAT';
+			case self::BOOLEAN:
+				return 'self::BOOLEAN';
+			case self::ARRAYTYPE:
+				return 'self::ARRAYTYPE';
+			case self::DATETIME:
+				return 'self::DATETIME';
 
 			default:
 				// Could not determine type
@@ -252,11 +252,11 @@ abstract class Type {
 		switch (strtolower($type)) {
 			case 'string':
 			case 'str':
-				return Type::STRING;
+				return self::STRING;
 
 			case 'integer':
 			case 'int':
-				return Type::INTEGER;
+				return self::INTEGER;
 
 			case 'float':
 			case 'flt':
@@ -264,18 +264,18 @@ abstract class Type {
 			case 'dbl':
 			case 'single':
 			case 'decimal':
-				return Type::FLOAT;
+				return self::FLOAT;
 
 			case 'bool':
 			case 'boolean':
 			case 'bit':
-				return Type::BOOLEAN;
+				return self::BOOLEAN;
 
 			case 'datetime':
 			case 'date':
 			case 'time':
 			case 'carbon':
-				return Type::DATETIME;
+				return self::DATETIME;
 
 			case 'null':
 			case 'void':
