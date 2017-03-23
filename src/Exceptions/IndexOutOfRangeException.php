@@ -1,6 +1,8 @@
 <?php namespace Cog\Exceptions;
 
-class IndexOutOfRangeException extends \Cog\Exception {
+use Cog\Exception;
+
+class IndexOutOfRangeException extends Exception {
 	public function __construct($index, $message) {
 		if ($message) {
 			$message = ': ' . $message;

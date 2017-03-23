@@ -1,8 +1,6 @@
 <?php namespace Cog;
 
 use Cog\Exceptions\InvalidCastException;
-use ReflectionClass;
-use ReflectionException;
 use Carbon\Carbon;
 use Stringy\Stringy;
 
@@ -54,7 +52,7 @@ abstract class Type {
 	const DATETIME = 'Carbon';
 
 	private static function castObjectTo($item, $type) {
-		$reflection = new ReflectionClass($item);
+		$reflection = new \ReflectionClass($item);
 
 		try {
 			if ($reflection->getName() === 'SimpleXMLElement') {
@@ -65,17 +63,17 @@ abstract class Type {
 					case Type::INTEGER:
 						try {
 							return Type::cast((string)$item, Type::INTEGER);
-						} catch (\Cog\Exception $objExc) {
-							$objExc->incrementOffset();
-							throw $objExc;
+						} catch (Exception $exception) {
+							$exception->incrementOffset();
+							throw $exception;
 						}
 
 					case Type::BOOLEAN:
-						$strItem = strtolower(trim((string)$item));
-						return ($strItem !== 'false' || !$strItem);
+						$item = strtolower(trim((string)$item));
+						return ($item !== 'false' || !$item);
 				}
 			}
-		} catch (Exception $objExc) {}
+		} catch (Exception $exception) {}
 
 		if ($type === Type::DATETIME && $item instanceof Carbon) {
 			return $item;
@@ -180,15 +178,13 @@ abstract class Type {
 		}
 
 		// Figure out what PHP thinks the type is
-		$strPhpType = gettype($item);
-
-		switch ($strPhpType) {
+		switch (gettype($item)) {
 			case Type::OBJECT:
 				try {
-					return Type::castObjectTo($item, $type);
-				} catch (\Cog\Exception $objExc) {
-					$objExc->incrementOffset();
-					throw $objExc;
+					return self::castObjectTo($item, $type);
+				} catch (Exception $exception) {
+					$exception->incrementOffset();
+					throw $exception;
 				}
 
 			case Type::STRING:
@@ -197,21 +193,20 @@ abstract class Type {
 			case Type::BOOLEAN:
 				try {
 					return Type::castValueTo($item, $type);
-				} catch (\Cog\Exception $objExc) {
-					$objExc->incrementOffset();
-					throw $objExc;
+				} catch (Exception $exception) {
+					$exception->incrementOffset();
+					throw $exception;
 				}
 
 			case Type::ARRAYTYPE:
 				try {
 					if ($type === Type::ARRAYTYPE) {
 						return $item;
-					} else {
-						throw new InvalidCastException(sprintf('Unable to cast Array to %s', $type));
 					}
-				} catch (\Cog\Exception $objExc) {
-					$objExc->incrementOffset();
-					throw $objExc;
+					throw new InvalidCastException(sprintf('Unable to cast Array to %s', $type));
+				} catch (Exception $exception) {
+					$exception->incrementOffset();
+					throw $exception;
 				}
 
 			default:
@@ -288,9 +283,9 @@ abstract class Type {
 
 			default:
 				try {
-					new ReflectionClass($type);
+					new \ReflectionClass($type);
 					return $type;
-				} catch (ReflectionException $objExc) {
+				} catch (\ReflectionException $exception) {
 					throw new InvalidCastException(sprintf('Unable to determine type of item from PHPDoc Comment to lookup its Type or Class: %s', $type));
 				}
 		}

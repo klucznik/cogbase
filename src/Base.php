@@ -53,24 +53,25 @@ abstract class Base {
 	 * @return void
 	 * @throws \Cog\Exception
 	 */
-	public final function overrideAttributes($overrideArray) {
+	public final function overrideAttributes(array $overrideArray) {
 		// Iterate through the OverrideAttribute Array
 		if ($overrideArray) {
 			foreach ($overrideArray as $overrideItem) {
 				if (is_array($overrideItem)) {
-					foreach ($overrideItem as $key => $value)
+					foreach ($overrideItem as $key => $value) {
 						// Apply the override
 						try {
 							$this->__set($key, $value);
-						} catch (\Cog\Exception $objExc) {
-							$objExc->incrementOffset();
-							throw $objExc;
+						} catch (Exception $exception) {
+							$exception->incrementOffset();
+							throw $exception;
 						}
+					}
 				} else {
 					// Extract the Key and Value for this OverrideAttribute
 					$position = strpos($overrideItem, '=');
 					if ($position === false) {
-						throw new \Cog\Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
+						throw new Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
 					}
 					$key = substr($overrideItem, 0, $position);
 					$value = substr($overrideItem, $position + 1);
@@ -78,12 +79,12 @@ abstract class Base {
 					// Ensure that the Value is properly formatted (unquoted, single-quoted, or double-quoted)
 					if (StringUtils::firstCharacter($value) === "'") {
 						if (substr($value, -1) !== "'") {
-							throw new \Cog\Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
+							throw new Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
 						}
 						$value = substr($value, 1, -2);
 					} elseif (StringUtils::firstCharacter($value) === '"') {
 						if (substr($value, -1) !== '"') {
-							throw new \Cog\Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
+							throw new Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
 						}
 						$value = substr($value, 1, -2);
 					}
@@ -91,9 +92,9 @@ abstract class Base {
 					// Apply the override
 					try {
 						$this->__set($key, $value);
-					} catch (\Cog\Exception $objExc) {
-						$objExc->incrementOffset();
-						throw $objExc;
+					} catch (Exception $exception) {
+						$exception->incrementOffset();
+						throw $exception;
 					}
 				}
 			}

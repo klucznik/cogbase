@@ -66,7 +66,7 @@ abstract class StringUtils {
 	 */
 	public static function getByteSize($bytes, $numberOfTenths = 1) {
 		if (null === $bytes) {
-			return _t('qcodo.notAvailable');
+			return 'N/A';
 		}
 
 		if ($bytes === 0) {
@@ -136,14 +136,19 @@ abstract class StringUtils {
 	 */
 	public static function contains($haystack, $needle, $caseSensitive = true) {
 		if ($caseSensitive) {
-			return (\mb_strpos($haystack, $needle, 0) !== false);
+			return (mb_strpos($haystack, $needle, 0) !== false);
 		}
-		return (\mb_stripos($haystack, $needle, 0) !== false);
+		return (mb_stripos($haystack, $needle, 0) !== false);
 	}
 
+	/**
+	 * @param $string string input string
+	 * @param $highlightWords string[] words to highlight in array
+	 * @return mixed
+	 */
 	public static function highlightWords($string, $highlightWords) {
-		foreach ($highlightWords as $strWord) {
-			$string = str_ireplace($strWord, '<b>' . $strWord . '</b>', $string);
+		foreach ($highlightWords as $word) {
+			$string = str_ireplace($word, '<b>' . $word . '</b>', $string);
 		}
 		return $string;
 	}
