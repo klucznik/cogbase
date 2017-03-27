@@ -50,7 +50,7 @@ abstract class Path {
 			self::initializeCli();
 		}
 
-		self::$appRoot = self::appRoot();
+		self::$appRoot = realpath(self::$webRoot . '/..');
 	}
 
 	protected static function initializeCli() {
@@ -113,13 +113,6 @@ abstract class Path {
 		while (self::lastCharacter(self::$webRoot) === '/' || self::lastCharacter(self::$webRoot) === '\\') {
 			self::$webRoot = substr(self::$webRoot, 0, -1);
 		}
-	}
-
-	/**
-	 * @return string
-	 */
-	protected static function appRoot() {
-		return realpath(self::$webRoot . '/..');
 	}
 
 	/**
