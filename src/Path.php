@@ -4,11 +4,18 @@ use UnexpectedValueException;
 
 abstract class Path {
 	/**
-	 * Cog\Path of the "web root" or "document root" of the web server
-	 * Like "/home/www/htdocs" on Linux/Unix or "c:\inetpub\wwwroot" on Windows
+	 * Path of the "web root" of the web server, points to the /www subdirectory
+	 * Like "/home/www/htdocs/www" on Linux/Unix or "c:\inetpub\wwwroot\www" on Windows
 	 * @var string
 	 */
 	public static $webRoot;
+
+	/**
+	 * Path of the "application root" or "document root" of the web server
+	 * Like "/home/www/htdocs" on Linux/Unix or "c:\inetpub\wwwroot" on Windows
+	 * @var string
+	 */
+	public static $appRoot;
 
 	/**
 	 * Full path of the actual PHP script being run Like "/home/www/htdocs/folder/script.php" on Linux/Unix
@@ -35,17 +42,23 @@ abstract class Path {
 	 */
 	public static function initialize() {
 		// Are we running as CLI?
-		self::$cliMode = array_key_exists('SERVER_PROTOCOL', $_SERVER) ? false : true;
+		self::$cliMode = !array_key_exists('SERVER_PROTOCOL', $_SERVER);
 
 		if (self::$cliMode === false) {
 			self::initializeWeb();
 		} else {
 			self::initializeCli();
 		}
+
+		self::$appRoot = self::appRoot();
 	}
 
 	protected static function initializeCli() {
-		self::$webRoot = realpath(__DIR__ . '/../www');
+		$path = realpath(__DIR__ . '/..');
+		while (!is_dir($path . '/www')) {
+			$path = realpath($path . '/..');
+		}
+		self::$webRoot = $path . '/www';
 	}
 
 	protected static function initializeWeb() {
@@ -105,7 +118,7 @@ abstract class Path {
 	/**
 	 * @return string
 	 */
-	public static function appRoot() {
+	protected static function appRoot() {
 		return realpath(self::$webRoot . '/..');
 	}
 
@@ -146,7 +159,7 @@ abstract class Path {
 	 */
 	public final static function dump() {
 		return [
-			'appRoot' => self::appRoot(),
+			'appRoot' => self::$appRoot,
 			'webRoot' => self::$webRoot,
 			'scriptFilename' => self::$scriptFilename,
 			'scriptName' => self::$scriptName,
