@@ -228,19 +228,19 @@ abstract class Type {
 	public final static function constant($type) {
 		switch ($type) {
 			case self::OBJECT:
-				return 'self::OBJECT';
+				return 'Type::OBJECT';
 			case self::STRING:
-				return 'self::STRING';
+				return 'Type::STRING';
 			case self::INTEGER:
-				return 'self::INTEGER';
+				return 'Type::INTEGER';
 			case self::FLOAT:
-				return 'self::FLOAT';
+				return 'Type::FLOAT';
 			case self::BOOLEAN:
-				return 'self::BOOLEAN';
+				return 'Type::BOOLEAN';
 			case self::ARRAYTYPE:
-				return 'self::ARRAYTYPE';
+				return 'Type::ARRAYTYPE';
 			case self::DATETIME:
-				return 'self::DATETIME';
+				return 'Type::DATETIME';
 
 			default:
 				// Could not determine type
