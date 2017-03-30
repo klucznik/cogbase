@@ -73,7 +73,7 @@ abstract class Path {
 
 		// Ensure both are set, or we'll have to abort
 		if (!self::$scriptFilename || !self::$scriptName) {
-			throw new UnexpectedValueException('Error on self::Initialize() - ScriptFilename or ScriptName was not set');
+			throw new UnexpectedValueException('Error on \Cog\Path::initialize() - scriptFilename or scriptName was not set');
 		}
 
 		// Setup WebRoot -- WebRoot will NOT be set and therefore needs to be magically
@@ -89,7 +89,9 @@ abstract class Path {
 				if ($substrResult === $strlenResult) {
 					self::$webRoot = substr(self::$scriptFilename, 0, $strlenResult);
 				} else {
-					throw new UnexpectedValueException('Error on self::Initialize() - ScriptFilename does not end with ScriptName');
+					throw new UnexpectedValueException(
+						'Error on \Cog\Path::initialize() - scriptFilename does not end with scriptName'
+					);
 				}
 			} else if (substr(self::$scriptFilename, 1, 2) === ':\\') { // Windows
 				// We need to first ascertain a DOS-compatible "Script Name"
@@ -101,11 +103,15 @@ abstract class Path {
 				if ($substrResult === $strlenResult) {
 					self::$webRoot = substr(self::$scriptFilename, 0, $strlenResult);
 				} else {
-					throw new UnexpectedValueException('Error on self::Initialize() - ScriptFilename does not end with ScriptName');
+					throw new UnexpectedValueException(
+						'Error on \Cog\Path::initialize() - scriptFilename does not end with scriptName'
+					);
 				}
 			} else {
 				// Could not ascertain Cog\FileSystem type
-				throw new UnexpectedValueException('Error on self::Initialize() - Could not ascertain file system type from ScriptFilename');
+				throw new UnexpectedValueException(
+					'Error on \Cog\Path::initialize() - Could not ascertain file system type from scriptFilename'
+				);
 			}
 		}
 

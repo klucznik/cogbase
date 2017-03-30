@@ -286,7 +286,9 @@ abstract class Type {
 					new \ReflectionClass($type);
 					return $type;
 				} catch (\ReflectionException $exception) {
-					throw new InvalidCastException(sprintf('Unable to determine type of item from PHPDoc Comment to lookup its Type or Class: %s', $type));
+					throw new InvalidCastException(
+						sprintf('Unable to determine type of item from PHPDoc Comment to lookup its Type or Class: %s', $type)
+					);
 				}
 		}
 	}
