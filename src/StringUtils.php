@@ -26,7 +26,7 @@ abstract class StringUtils {
 	public final static function lastCharacter($string) {
 		$length = mb_strlen($string);
 		if ($length > 0) {
-			return mb_substr($string, $length - 1);
+			return mb_substr($string, -1);
 		}
 		return null;
 	}
@@ -131,7 +131,6 @@ abstract class StringUtils {
 	 * @param  string $haystack      input string
 	 * @param  string $needle        Substring to look for
 	 * @param  bool   $caseSensitive Whether or not to enforce case-sensitivity
-	 *
 	 * @return bool   Whether or not $haystack contains $needle
 	 */
 	public static function contains($haystack, $needle, $caseSensitive = true) {

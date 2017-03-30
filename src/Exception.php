@@ -65,7 +65,6 @@ class Exception extends \Exception {
 	 *
 	 * @param string $message the Message of the exception
 	 * @param integer $offset the optional Offset value (currently defaulted to 1)
-	 * @throws \Cog\Exception the new exception
 	 */
 	public function __construct($message, $offset = 1) {
 		parent::__construct($message);
