@@ -63,8 +63,8 @@ class Exception extends \Exception {
 	 * Normally, the Offset would be altered by calls to incrementOffset
 	 * at every step the CallerException is caught/rethrown up the call stack.
 	 *
-	 * @param string $message the Message of the exception
-	 * @param integer $offset the optional Offset value (currently defaulted to 1)
+	 * @param string $message the message of the exception
+	 * @param integer $offset the optional offset value (currently defaulted to 1)
 	 */
 	public function __construct($message, $offset = 1) {
 		parent::__construct($message);
