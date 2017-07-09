@@ -11,7 +11,7 @@ abstract class StringUtils {
 	 * @param string $string
 	 * @return string the first character, or null
 	 */
-	public final static function firstCharacter($string) {
+	final public static function firstCharacter($string) {
 		if (mb_strlen($string) > 0) {
 			return mb_substr($string, 0, 1);
 		}
@@ -23,7 +23,7 @@ abstract class StringUtils {
 	 * @param string $string
 	 * @return string the last character, or null
 	 */
-	public final static function lastCharacter($string) {
+	final public static function lastCharacter($string) {
 		$length = mb_strlen($string);
 		if ($length > 0) {
 			return mb_substr($string, -1);
@@ -37,7 +37,7 @@ abstract class StringUtils {
 	 * @param string $needle beginning of the string to test against
 	 * @return boolean
 	 */
-	public final static function beginsWith($haystack, $needle) {
+	final public static function beginsWith($haystack, $needle) {
 		return 0 === mb_strpos($haystack, $needle);
 	}
 
@@ -46,7 +46,7 @@ abstract class StringUtils {
 	 * @param string $string string to escape
 	 * @return string the XML Node-safe StringUtils
 	 */
-	public final static function xmlEscape($string) {
+	final public static function xmlEscape($string) {
 		if ((mb_strpos($string, '<') !== false) ||
 			(mb_strpos($string, '&') !== false)
 		) {

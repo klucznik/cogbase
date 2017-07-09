@@ -107,7 +107,7 @@ abstract class CurrentUri {
 	 * @param integer|null $index
 	 * @return array|string|null
 	 */
-	public final static function pathInfo($index = null) {
+	final public static function pathInfo($index = null) {
 		if ($index === null) {
 			return self::$pathInfoArray;
 		}
@@ -144,7 +144,7 @@ abstract class CurrentUri {
 	 * For development purposes, this static method outputs all the Paths
 	 * @return array
 	 */
-	public final static function dump() {
+	final public static function dump() {
 		return [
 			'scheme' => self::$scheme,
 			'ssl' => self::isSSL(),

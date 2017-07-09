@@ -171,7 +171,7 @@ abstract class Type {
 	 * @return mixed the passed in value/array/object that has been cast to strType
 	 * @throws \Cog\Exception
 	 */
-	public final static function cast($item, $type) {
+	final public static function cast($item, $type) {
 		// Automatically Return NULLs
 		if (null === $item) {
 			return null;
@@ -225,7 +225,7 @@ abstract class Type {
 	 * @return string the text of the Type:XXX Constant
 	 * @throws InvalidCastException
 	 */
-	public final static function constant($type) {
+	final public static function constant($type) {
 		switch ($type) {
 			case self::OBJECT:
 				return 'Type::OBJECT';
@@ -248,7 +248,7 @@ abstract class Type {
 		}
 	}
 
-	public final static function typeFromPhpDoc($type) {
+	final public static function typeFromPhpDoc($type) {
 		switch (strtolower($type)) {
 			case 'string':
 			case 'str':

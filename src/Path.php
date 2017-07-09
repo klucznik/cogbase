@@ -154,9 +154,9 @@ abstract class Path {
 
 	/**
 	 * For development purposes, this static method outputs all the Paths
-	 * @return string
+	 * @return string[]
 	 */
-	public final static function dump() {
+	final public static function dump() {
 		return [
 			'appRoot' => self::$appRoot,
 			'webRoot' => self::$webRoot,

@@ -17,6 +17,7 @@ abstract class Base {
 	 * @param string $name Name of the property to get
 	 * @return mixed the returned property
 	 * @throws \Cog\Exceptions\UndefinedPropertyException
+	 * @throws \ReflectionException
 	 */
 	public function __get($name) {
 		$reflection = new ReflectionClass($this);
@@ -33,6 +34,7 @@ abstract class Base {
 	 * @param string $value New value of the property
 	 * @return mixed the property that was set
 	 * @throws \Cog\Exceptions\UndefinedPropertyException
+	 * @throws \ReflectionException
 	 */
 	public function __set($name, $value) {
 		$reflection = new ReflectionClass($this);
@@ -52,6 +54,7 @@ abstract class Base {
 	 * @param mixed[] $overrideArray the array of name-value pair items of properties/attributes to override
 	 * @return void
 	 * @throws \Cog\Exception
+	 * @throws \ReflectionException
 	 */
 	public final function overrideAttributes(array $overrideArray) {
 		// Iterate through the OverrideAttribute Array
