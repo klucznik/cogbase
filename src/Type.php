@@ -216,9 +216,9 @@ abstract class Type {
 					throw $exception;
 				}
 
-			case self::ARRAYTYPE:
+			case self::ARRAY:
 				try {
-					if ($type === self::ARRAYTYPE) {
+					if ($type === self::ARRAY) {
 						return $item;
 					}
 					throw new InvalidCastException(sprintf('Unable to cast Array to %s', $type));
