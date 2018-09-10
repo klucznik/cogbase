@@ -83,8 +83,7 @@ abstract class Type {
 						return ($item !== 'false' || !$item);
 				}
 			}
-		} catch (\Cog\Exception $exception) {
-		}
+		} catch (\Cog\Exception $exception) {}
 
 		if ($type === self::DATETIME && $item instanceof Carbon) {
 			return $item;

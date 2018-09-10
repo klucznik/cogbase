@@ -1,7 +1,5 @@
 <?php namespace Cog;
 
-use UnexpectedValueException;
-
 abstract class Path {
 	/**
 	 * Path of the "web root" of the web server, points to the /www subdirectory
@@ -37,7 +35,7 @@ abstract class Path {
 	/**
 	 * This should be the first call to initialize all the static variables The application object also has
 	 * static methods that are miscellaneous web development utilities, etc.
-	 * @throws UnexpectedValueException
+	 * @throws \UnexpectedValueException
 	 * @return void
 	 */
 	public static function initialize() {
@@ -73,7 +71,7 @@ abstract class Path {
 
 		// Ensure both are set, or we'll have to abort
 		if (!self::$scriptFilename || !self::$scriptName) {
-			throw new UnexpectedValueException('Error on \Cog\Path::initialize() - scriptFilename or scriptName was not set');
+			throw new \UnexpectedValueException('Error on \Cog\Path::initialize() - scriptFilename or scriptName was not set');
 		}
 
 		// Setup WebRoot -- WebRoot will NOT be set and therefore needs to be magically
@@ -89,7 +87,7 @@ abstract class Path {
 			$scriptName = self::$scriptName;
 		} else {
 			// Could not ascertain file system type
-			throw new UnexpectedValueException(
+			throw new \UnexpectedValueException(
 				'Error on \Cog\Path::initialize() - Could not ascertain file system type from scriptFilename'
 			);
 		}
@@ -100,7 +98,7 @@ abstract class Path {
 		if ($substrResult === $strlenResult) {
 			self::$webRoot = substr(self::$scriptFilename, 0, $strlenResult);
 		} else {
-			throw new UnexpectedValueException(
+			throw new \UnexpectedValueException(
 				'Error on \Cog\Path::initialize() - scriptFilename does not end with scriptName'
 			);
 		}

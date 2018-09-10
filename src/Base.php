@@ -54,7 +54,7 @@ abstract class Base {
 	 * This allows you to set any properties, given by a name-value pair list in $overrideArray.
 	 *
 	 * Each item in mixOverrideArray needs to be either a string in the format
-	 * of Property=Value or an array in the format of array(Property => Value).
+	 * of Property=Value or an array in the format of [Property => Value].
 	 * OverrideAttributes() will basically call
 	 * $this->Property = Value for each string element in the array.
 	 *
@@ -66,49 +66,51 @@ abstract class Base {
 	 */
 	final public function overrideAttributes(array $overrideArray) {
 		// Iterate through the OverrideAttribute Array
-		if ($overrideArray) {
-			foreach ($overrideArray as $overrideItem) {
-				if (\is_array($overrideItem)) {
-					foreach ($overrideItem as $key => $value) {
-						// Apply the override
-						try {
-							$this->__set($key, $value);
-						} catch (Exception $exception) {
-							$exception->incrementOffset();
-							throw $exception;
-						}
-					}
-				} else {
-					// Extract the Key and Value for this OverrideAttribute
-					$position = strpos($overrideItem, '=');
-					if ($position === false) {
+		foreach ($overrideArray as $overrideItem) {
+			if (\is_array($overrideItem)) {
+				foreach ($overrideItem as $key => $value) {
+					$this->applyOverrideAttributes($key, $value);
+				}
+			} else {
+				// Extract the Key and Value for this OverrideAttributes
+				$overrideItem = trim($overrideItem);
+				$position = strpos($overrideItem, '=');
+				if ($position === false) {
+					throw new Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
+				}
+				$key = substr($overrideItem, 0, $position);
+				$value = substr($overrideItem, $position + 1);
+
+				// Ensure that the Value is properly formatted (unquoted, single-quoted, or double-quoted)
+				if (StringUtils::beginsWith($value, "'")) {
+					if (StringUtils::endsWith($value, "'") === false) {
 						throw new Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
 					}
-					$key = substr($overrideItem, 0, $position);
-					$value = substr($overrideItem, $position + 1);
-
-					// Ensure that the Value is properly formatted (unquoted, single-quoted, or double-quoted)
-					if (StringUtils::beginsWith($value, "'")) {
-						if (StringUtils::endsWith($value, "'") === false) {
-							throw new Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
-						}
-						$value = substr($value, 1, -2);
-					} elseif (StringUtils::beginsWith($value,'"')) {
-						if (StringUtils::endsWith($value, '"') === false) {
-							throw new Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
-						}
-						$value = substr($value, 1, -2);
+					$value = substr($value, 1, -1);
+				} elseif (StringUtils::beginsWith($value,'"')) {
+					if (StringUtils::endsWith($value, '"') === false) {
+						throw new Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
 					}
-
-					// Apply the override
-					try {
-						$this->__set($key, $value);
-					} catch (Exception $exception) {
-						$exception->incrementOffset();
-						throw $exception;
-					}
+					$value = substr($value, 1, -1);
 				}
+
+				$this->applyOverrideAttributes($key, $value);
 			}
+		}
+	}
+
+	/**
+	 * Apply the override
+	 * @param $key
+	 * @param $value
+	 * @throws Exception
+	 */
+	private function applyOverrideAttributes($key, $value) {
+		try {
+			$this->$key = $value;
+		} catch (\Cog\Exception $exception) {
+			$exception->incrementOffset();
+			throw $exception;
 		}
 	}
 }
