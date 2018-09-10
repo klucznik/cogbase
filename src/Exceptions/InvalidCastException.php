@@ -3,7 +3,7 @@
 use Cog\Exception;
 
 /**
- * The exception that is thrown by Type::cast
+ * The exception that is thrown by Type::Cast
  * if an invalid cast is performed.  InvalidCastException
  * derives from CallerException, and therefore should be handled
  * similar to how CallerExceptions are handled (e.g. incrementOffset should
@@ -11,10 +11,6 @@ use Cog\Exception;
  */
 class InvalidCastException extends Exception {
 
-	/**
-	 * @param string $message the message of the exception
-	 * @param integer $offset the optional offset value (currently defaulted to 2)
-	 */
 	public function __construct($message, $offset = 2) {
 		parent::__construct($message, $offset);
 	}

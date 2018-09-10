@@ -4,10 +4,6 @@ use Cog\Exception;
 
 class IndexOutOfRangeException extends Exception {
 
-	/**
-	 * @param integer $index
-	 * @param string $message the message of the exception
-	 */
 	public function __construct($index, $message) {
 		if ($message) {
 			$message = ': ' . $message;

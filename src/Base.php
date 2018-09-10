@@ -1,7 +1,6 @@
 <?php namespace Cog;
 
 use Cog\Exceptions\UndefinedPropertyException;
-use ReflectionClass;
 
 /**
  * This is the Base Class for ALL classes in the system.  It provides
@@ -16,29 +15,39 @@ abstract class Base {
 	 *
 	 * @param string $name Name of the property to get
 	 * @return mixed the returned property
-	 * @throws \Cog\Exceptions\UndefinedPropertyException
-	 * @throws \ReflectionException
+	 * @throws UndefinedPropertyException
 	 */
 	public function __get($name) {
-		$reflection = new ReflectionClass($this);
-		throw new UndefinedPropertyException('GET', $reflection->getName(), $name);
+		try {
+			$reflection = new \ReflectionClass($this);
+			throw new UndefinedPropertyException('GET', $reflection->getName(), $name);
+		} catch (\ReflectionException $exception) {}
+
+		return null;
 	}
 
 	/**
-	 * Override method to perform a property "Set"
-	 * This will set the property $strName to be $mixValue
+	 * Override method to perform a property "set"
+	 * This will set the property $name to be $value
 	 * All inherited objects that call __set() should always fall through
 	 * to calling parent::__set() in a try/catch statement catching for CallerExceptions.
 	 *
 	 * @param string $name Name of the property to set
-	 * @param string $value New value of the property
-	 * @return mixed the property that was set
-	 * @throws \Cog\Exceptions\UndefinedPropertyException
-	 * @throws \ReflectionException
-	 */
+	 * @param mixed $value New value of the property
+	 * @throws UndefinedPropertyException
+	 * @return mixed
+	*/
 	public function __set($name, $value) {
-		$reflection = new ReflectionClass($this);
-		throw new UndefinedPropertyException('SET', $reflection->getName(), $name);
+		try {
+			$reflection = new \ReflectionClass($this);
+			throw new UndefinedPropertyException('SET', $reflection->getName(), $name);
+		} catch (\ReflectionException $exception) {}
+
+		return null;
+	}
+
+	public function __isset($name) {
+		return false;
 	}
 
 	/**
@@ -54,13 +63,12 @@ abstract class Base {
 	 * @param mixed[] $overrideArray the array of name-value pair items of properties/attributes to override
 	 * @return void
 	 * @throws \Cog\Exception
-	 * @throws \ReflectionException
 	 */
-	public final function overrideAttributes(array $overrideArray) {
+	final public function overrideAttributes(array $overrideArray) {
 		// Iterate through the OverrideAttribute Array
 		if ($overrideArray) {
 			foreach ($overrideArray as $overrideItem) {
-				if (is_array($overrideItem)) {
+				if (\is_array($overrideItem)) {
 					foreach ($overrideItem as $key => $value) {
 						// Apply the override
 						try {
@@ -80,13 +88,13 @@ abstract class Base {
 					$value = substr($overrideItem, $position + 1);
 
 					// Ensure that the Value is properly formatted (unquoted, single-quoted, or double-quoted)
-					if (StringUtils::firstCharacter($value) === "'") {
-						if (substr($value, -1) !== "'") {
+					if (StringUtils::beginsWith($value, "'")) {
+						if (StringUtils::endsWith($value, "'") === false) {
 							throw new Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
 						}
 						$value = substr($value, 1, -2);
-					} elseif (StringUtils::firstCharacter($value) === '"') {
-						if (substr($value, -1) !== '"') {
+					} elseif (StringUtils::beginsWith($value,'"')) {
+						if (StringUtils::endsWith($value, '"') === false) {
 							throw new Exception(sprintf('Improperly formatted OverrideAttribute: %s', $overrideItem));
 						}
 						$value = substr($value, 1, -2);

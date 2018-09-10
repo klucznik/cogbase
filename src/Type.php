@@ -39,7 +39,7 @@ use Stringy\Stringy;
  *
  * In theory, the type library should maintain the same level of flexibility
  * PHP developers are accustomed to, while providing a mechanism to limit
- * careless coding errors and tough to figure out mistakes due to PHP's sometimes
+ * careless coding errors and tough to figure out mistakes due to PHP sometimes
  * overly relaxed type conversions.
  */
 abstract class Type {
@@ -48,11 +48,21 @@ abstract class Type {
 	const FLOAT = 'double';
 	const BOOLEAN = 'boolean';
 	const OBJECT = 'object';
-	const ARRAYTYPE = 'array';
+	const ARRAY = 'array';
 	const DATETIME = 'Carbon';
 
+	/**
+	 * @param mixed $item
+	 * @param string $type
+	 * @return bool|string|mixed
+	 * @throws InvalidCastException
+	 */
 	private static function castObjectTo($item, $type) {
-		$reflection = new \ReflectionClass($item);
+		try {
+			$reflection = new \ReflectionClass($item);
+		} catch (\ReflectionException $exception) {
+			throw new InvalidCastException('Object is not an instance of any class');
+		}
 
 		try {
 			if ($reflection->getName() === 'SimpleXMLElement') {
@@ -63,7 +73,7 @@ abstract class Type {
 					case self::INTEGER:
 						try {
 							return self::cast((string)$item, self::INTEGER);
-						} catch (Exception $exception) {
+						} catch (\Cog\Exception $exception) {
 							$exception->incrementOffset();
 							throw $exception;
 						}
@@ -73,7 +83,8 @@ abstract class Type {
 						return ($item !== 'false' || !$item);
 				}
 			}
-		} catch (Exception $exception) {}
+		} catch (\Cog\Exception $exception) {
+		}
 
 		if ($type === self::DATETIME && $item instanceof Carbon) {
 			return $item;
@@ -91,8 +102,14 @@ abstract class Type {
 		throw new InvalidCastException(sprintf('Unable to cast %s object to %s', $reflection->getName(), $type));
 	}
 
+	/**
+	 * @param $item
+	 * @param string $type
+	 * @return mixed
+	 * @throws InvalidCastException
+	 */
 	private static function castValueTo($item, $type) {
-		$itemType = gettype($item);
+		$itemType = \gettype($item);
 
 		switch ($type) {
 			case self::BOOLEAN:
@@ -126,7 +143,7 @@ abstract class Type {
 
 				// Check to make sure the value hasn't changed significantly
 				$mixTest = $item;
-				settype($mixTest, gettype($original));
+				settype($mixTest, \gettype($original));
 
 				// Has it?
 				if ($mixTest != $original) {
@@ -163,13 +180,14 @@ abstract class Type {
 	 *
 	 * Will throw an exception if the cast fails, causes unexpected side effects,
 	 * if attempting to cast an object to a value (or vice versa), or if an object
-	 * is being cast to a class that isn't a subclass (e.g. parent).  The exception
+	 * is being cast to a class that isn't a subclass (e.g. parent). The exception
 	 * thrown will be an InvalidCastException, which extends CallerException.
 	 *
 	 * @param mixed $item the value, array or object that you want to cast
-	 * @param string $type the type to cast to.  Can be a Type::XXX constant (e.g. Type::INTEGER), or the name of a Class
-	 * @return mixed the passed in value/array/object that has been cast to strType
+	 * @param string $type the type to cast to. Can be a Type::XXX constant (e.g. Type::INTEGER), or the name of a Class
+	 * @return mixed the passed in value/array/object that has been cast to given type
 	 * @throws \Cog\Exception
+	 * @throws InvalidCastException
 	 */
 	final public static function cast($item, $type) {
 		// Automatically Return NULLs
@@ -178,11 +196,11 @@ abstract class Type {
 		}
 
 		// Figure out what PHP thinks the type is
-		switch (gettype($item)) {
+		switch (\gettype($item)) {
 			case self::OBJECT:
 				try {
 					return self::castObjectTo($item, $type);
-				} catch (Exception $exception) {
+				} catch (\Cog\Exception $exception) {
 					$exception->incrementOffset();
 					throw $exception;
 				}
@@ -193,7 +211,7 @@ abstract class Type {
 			case self::BOOLEAN:
 				try {
 					return self::castValueTo($item, $type);
-				} catch (Exception $exception) {
+				} catch (\Cog\Exception $exception) {
 					$exception->incrementOffset();
 					throw $exception;
 				}
@@ -204,7 +222,7 @@ abstract class Type {
 						return $item;
 					}
 					throw new InvalidCastException(sprintf('Unable to cast Array to %s', $type));
-				} catch (Exception $exception) {
+				} catch (\Cog\Exception $exception) {
 					$exception->incrementOffset();
 					throw $exception;
 				}
@@ -237,59 +255,14 @@ abstract class Type {
 				return 'Type::FLOAT';
 			case self::BOOLEAN:
 				return 'Type::BOOLEAN';
-			case self::ARRAYTYPE:
-				return 'Type::ARRAYTYPE';
+			case self::ARRAY:
+				return 'Type::ARRAY';
 			case self::DATETIME:
 				return 'Type::DATETIME';
 
 			default:
 				// Could not determine type
 				throw new InvalidCastException(sprintf('Unable to determine type of item to lookup its constant: %s', $type));
-		}
-	}
-
-	final public static function typeFromPhpDoc($type) {
-		switch (strtolower($type)) {
-			case 'string':
-			case 'str':
-				return self::STRING;
-
-			case 'integer':
-			case 'int':
-				return self::INTEGER;
-
-			case 'float':
-			case 'flt':
-			case 'double':
-			case 'dbl':
-			case 'single':
-			case 'decimal':
-				return self::FLOAT;
-
-			case 'bool':
-			case 'boolean':
-			case 'bit':
-				return self::BOOLEAN;
-
-			case 'datetime':
-			case 'date':
-			case 'time':
-			case 'carbon':
-				return self::DATETIME;
-
-			case 'null':
-			case 'void':
-				return 'void';
-
-			default:
-				try {
-					new \ReflectionClass($type);
-					return $type;
-				} catch (\ReflectionException $exception) {
-					throw new InvalidCastException(
-						sprintf('Unable to determine type of item from PHPDoc Comment to lookup its Type or Class: %s', $type)
-					);
-				}
 		}
 	}
 }

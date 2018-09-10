@@ -1,13 +1,9 @@
 <?php namespace Cog;
 
-use Exception;
-use League;
-use UnexpectedValueException;
+use League\Uri\Components\Query;
+use League\Uri\Http as HttpUri;
 
 abstract class CurrentUri {
-
-	/** @var League\Url\Url; */
-	protected static $uri;
 
 	/** @var string */
 	public static $scheme;
@@ -36,7 +32,7 @@ abstract class CurrentUri {
 	protected static $queryArray = [];
 
 	/**
-	 * The full Request URI that was requested
+	 * The full RequestURI that was requested
 	 * So for "http://www.domain.com/folder/script.php/15/25/?item=15&value=22"
 	 * $requestUri would be "/folder/script.php/15/25/?item=15&value=22"
 	 * @var string
@@ -45,33 +41,44 @@ abstract class CurrentUri {
 
 	/**
 	 * This should be the first call to initialize all the static variables
-	 * @throws Exception
+	 * @throws \UnexpectedValueException
 	 * @return void
 	 */
 	public static function initialize() {
-		self::$uri = League\Url\Url::createFromServer($_SERVER);
+		$uri = HttpUri::createFromServer($_SERVER);
 
-		self::$scheme = self::$uri->getScheme()->get();
-		self::$host = self::$uri->getHost()->get();
+		self::$scheme = $uri->getScheme();
+		self::$host = $uri->getHost();
 
 		// Ensure both are set, or we'll have to abort
 		if (!Path::$scriptFilename || !Path::$scriptName) {
-			throw new UnexpectedValueException('Error on self::initialize() - scriptFilename or scriptName was not set');
+			throw new \UnexpectedValueException('Error on self::initialize() - scriptFilename or scriptName was not set');
 		}
 
-		// Setup path and queryString (if applicable)
+		// Setup queryString
+		self::$queryString = $uri->getQuery();
 
-		self::$queryArray = self::$uri->getQuery()->toArray();
-		self::$queryString = self::$uri->getQuery()->getUriComponent();
+		$query = new Query(self::$queryString);
+		self::$queryArray = $query->getPairs();
 
-		self::$pathInfo = self::$uri->getPath()->getUriComponent();
+		// Setup path
+		self::$pathInfo = $uri->getPath();
 
-		if (self::stringBeginsWith(self::$pathInfo, Path::$scriptName)) { //clean up path
-			self::$pathInfo = substr(self::$pathInfo, strlen(Path::$scriptName));
+		if (StringUtils::beginsWith(self::$pathInfo, Path::$scriptName)) { //clean up path
+			self::$pathInfo = substr(self::$pathInfo, \strlen(Path::$scriptName));
 		}
 
 		if (self::$pathInfo === false) {
 			self::$pathInfo = '';
+		}
+
+		if (self::$pathInfo !== null && self::$pathInfo !== false && self::$pathInfo !== '') {
+			$pathInfo = self::$pathInfo; // store path info array
+			if (0 === strncmp($pathInfo, '/', 1)) { //begins with '/'
+				$pathInfo = substr($pathInfo, 1); // Remove Trailing '/'
+			}
+
+			self::$pathInfoArray = explode('/', $pathInfo);
 		}
 
 		// Setup requestUri
@@ -85,29 +92,20 @@ abstract class CurrentUri {
 				self::$queryString ? sprintf('?%s', self::$queryString) : ''
 			);
 		}
-
-		if (self::$pathInfo !== null && self::$pathInfo !== false && self::$pathInfo !== '') {
-			$pathInfo = self::$pathInfo; // store path info array
-			if (0 === strpos($pathInfo, '/')) { //begins with '/'
-				$pathInfo = substr($pathInfo, 1); // Remove Trailing '/'
-			}
-
-			self::$pathInfoArray = explode('/', $pathInfo);
-		}
 	}
 
 	/**
 	 * Gets the value of the pathInfo item at given index. Will return null if it doesn't exist.
 	 *
 	 * The way pathInfo index is determined is, for example, given a URL '/folder/page.php/id/15/blue',
-	 * Cog\CurrentUri::pathInfo(0) will return 'id'
-	 * Cog\CurrentUri::pathInfo(1) will return '15'
-	 * Cog\CurrentUri::pathInfo(2) will return 'blue'
+	 * CurrentUri::pathInfo(0) will return 'id'
+	 * CurrentUri::pathInfo(1) will return '15'
+	 * CurrentUri::pathInfo(2) will return 'blue'
 	 *
-	 * @param integer|null $index
-	 * @return array|string|null
+	 * @param integer | null $index
+	 * @return array | string | null
 	 */
-	final public static function pathInfo($index = null) {
+	 final public static function pathInfo($index = null) {
 		if ($index === null) {
 			return self::$pathInfoArray;
 		}
@@ -122,7 +120,7 @@ abstract class CurrentUri {
 	/**
 	 * Gets the value of the queryString item $item.  Will return NULL if it doesn't exist.
 	 * @param string $item
-	 * @return string|null
+	 * @return string | null
 	 */
 	public static function queryString($item) {
 		if (array_key_exists($item, self::$queryArray)) {
@@ -136,7 +134,7 @@ abstract class CurrentUri {
 	 * Returns true if the site is encrypted
 	 * @return bool
 	 */
-	public static function isSSL() {
+	public static function isSSL() : bool {
 		return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
 	}
 
@@ -144,7 +142,7 @@ abstract class CurrentUri {
 	 * For development purposes, this static method outputs all the Paths
 	 * @return array
 	 */
-	final public static function dump() {
+	final public static function dump() : array {
 		return [
 			'scheme' => self::$scheme,
 			'ssl' => self::isSSL(),
@@ -155,10 +153,6 @@ abstract class CurrentUri {
 			'queryArray' => self::$queryArray,
 			'requestUri' => self::$requestUri
 		];
-	}
-
-	protected static function stringBeginsWith($haystack, $needle) {
-		return 0 === strpos($haystack, $needle);
 	}
 }
 

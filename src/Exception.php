@@ -63,8 +63,8 @@ class Exception extends \Exception {
 	 * Normally, the Offset would be altered by calls to incrementOffset
 	 * at every step the CallerException is caught/rethrown up the call stack.
 	 *
-	 * @param string $message the message of the exception
-	 * @param integer $offset the optional offset value (currently defaulted to 1)
+	 * @param string $message the Message of the exception
+	 * @param integer $offset the optional Offset value (currently defaulted to 1)
 	 */
 	public function __construct($message, $offset = 1) {
 		parent::__construct($message);
@@ -72,10 +72,15 @@ class Exception extends \Exception {
 		$this->offset = $offset;
 		$this->traceArray = debug_backtrace();
 
-		if ( array_key_exists('file', $this->traceArray[$this->offset])) {
+		$this->updateOffset();
+	}
+
+	private function updateOffset() {
+		if (array_key_exists('file', $this->traceArray[$this->offset])) {
 			$this->file = $this->traceArray[$this->offset]['file'];
 		}
-		if ( array_key_exists('line', $this->traceArray[$this->offset])) {
+
+		if (array_key_exists('line', $this->traceArray[$this->offset])) {
 			$this->line = $this->traceArray[$this->offset]['line'];
 		}
 	}
@@ -85,13 +90,7 @@ class Exception extends \Exception {
 		$this->file = '';
 		$this->line = '';
 
-		if (array_key_exists('file', $this->traceArray[$this->offset])) {
-			$this->file = $this->traceArray[$this->offset]['file'];
-		}
-
-		if (array_key_exists('line', $this->traceArray[$this->offset])) {
-			$this->line = $this->traceArray[$this->offset]['line'];
-		}
+		$this->updateOffset();
 	}
 
 	public function decrementOffset() {
@@ -99,15 +98,15 @@ class Exception extends \Exception {
 		$this->file = '';
 		$this->line = '';
 
-		if (array_key_exists('file', $this->traceArray[$this->offset])) {
-			$this->file = $this->traceArray[$this->offset]['file'];
-		}
-
-		if (array_key_exists('line', $this->traceArray[$this->offset])) {
-			$this->line = $this->traceArray[$this->offset]['line'];
-		}
+		$this->updateOffset();
 	}
 
+	/**
+	 * @param string $name
+	 * @return array|int|mixed
+	 * @throws UndefinedPropertyException
+	 * @throws \ReflectionException
+	 */
 	public function __get($name) {
 		switch ($name) {
 			case 'offset': return $this->offset;
@@ -120,7 +119,32 @@ class Exception extends \Exception {
 		}
 	}
 
-	public function setMessage($message) {
-		$this->message = $message;
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 * @return array|int|mixed
+	 * @throws UndefinedPropertyException
+	 * @throws \ReflectionException
+	 */
+	public function __set($name, $value) {
+		$reflection = new \ReflectionClass($this);
+		throw new UndefinedPropertyException('SET', $reflection->getName(), $name);
+	}
+
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
+	public function __isset($name) {
+		switch ($name) {
+			case 'offset':
+				return $this->offset !== null;
+
+			case 'backTrace':
+			case 'traceArray':
+				return true;
+		}
+
+		return false;
 	}
 }

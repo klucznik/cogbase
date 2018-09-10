@@ -2,6 +2,7 @@
 
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 
 abstract class FileSystem {
@@ -51,7 +52,7 @@ abstract class FileSystem {
 	 * @param string|array|\Traversable $files A filename, an array of files, or a \Traversable instance to check
 	 * @return bool true if the file exists, false otherwise
 	 */
-	public static function exists($files) {
+	public static function exists($files) : bool {
 		self::initialize();
 		return self::$fs->exists($files);
 	}
@@ -141,7 +142,7 @@ abstract class FileSystem {
 	 * @param string $startPath Absolute path where traversal begins
 	 * @return string Path of target relative to starting path
 	 */
-	public static function makePathRelative($endPath, $startPath) {
+	public static function makePathRelative($endPath, $startPath) : string {
 		self::initialize();
 		return self::$fs->makePathRelative($endPath, $startPath);
 	}
@@ -152,7 +153,7 @@ abstract class FileSystem {
 	 * @param string $file A file path
 	 * @return bool
 	 */
-	public static function isAbsolutePath($file) {
+	public static function isAbsolutePath($file) : bool {
 		self::initialize();
 		return self::$fs->isAbsolutePath($file);
 	}
@@ -183,7 +184,7 @@ abstract class FileSystem {
 	 *                       Note: Windows uses only the first three characters of prefix.
 	 * @return string The new temporary filename (with path), or throw an exception on failure.
 	 */
-	public static function tempnam($dir, $prefix) {
+	public static function tempnam($dir, $prefix) : string {
 		self::initialize();
 		return self::$fs->tempnam($dir, $prefix);
 	}
@@ -221,7 +222,7 @@ abstract class FileSystem {
 	 * @throws \Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException
 	 * @return string file's mime type, empty string if cannot detect
 	 */
-	public static function getMimeType($filePath) {
+	public static function getMimeType($filePath) : string {
 		$toReturn = '';
 
 		$mimeGuesser = MimeTypeGuesser::getInstance();
@@ -232,5 +233,29 @@ abstract class FileSystem {
 		}
 
 		return $toReturn;
+	}
+
+	/**
+	 * Removes all files from a given directory
+	 * @param string $directoryPath
+	 * @param array $filesNamesToOmit
+	 *
+	 * @return int mount of files removed
+	 */
+	public static function cleanDirectory($directoryPath, array $filesNamesToOmit = []) : int {
+		$count = 0;
+
+		foreach (new \DirectoryIterator($directoryPath) as $file) {
+			if ($file->isFile() && !\in_array($file->getFilename(), $filesNamesToOmit, false)) {
+				try {
+					self::remove($file->getPathname());
+				} catch (IOExceptionInterface $e) {
+					echo '<error>An error occurred while deleting ' . $e->getPath() . '</error>';
+				}
+				$count++;
+			}
+		}
+
+		return $count;
 	}
 }

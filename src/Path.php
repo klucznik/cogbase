@@ -44,19 +44,19 @@ abstract class Path {
 		// Are we running as CLI?
 		self::$cliMode = !array_key_exists('SERVER_PROTOCOL', $_SERVER);
 
-		if (self::$cliMode === false) {
-			self::initializeWeb();
-		} else {
+		if (self::$cliMode === true) {
 			self::initializeCli();
+		} else {
+			self::initializeWeb();
 		}
 
-		self::$appRoot = realpath(self::$webRoot . '/..');
+		self::$appRoot = \dirname(self::$webRoot);
 	}
 
 	protected static function initializeCli() {
-		$path = realpath(__DIR__ . '/..');
-		while (!is_dir($path . '/www')) {
-			$path = realpath($path . '/..');
+		$path = \dirname(__DIR__);
+		while (is_dir($path . '/www') === false) {
+			$path = \dirname($path);
 		}
 		self::$webRoot = $path . '/www';
 	}
@@ -79,40 +79,30 @@ abstract class Path {
 		// Setup WebRoot -- WebRoot will NOT be set and therefore needs to be magically
 		if (array_key_exists('DOCUMENT_ROOT', $_SERVER) && $_SERVER['DOCUMENT_ROOT']) {
 			self::$webRoot = $_SERVER['DOCUMENT_ROOT'];
+		}
+
+		if (substr(self::$scriptFilename, 1, 2) === ':\\') {
+			// looks like Windows files system, we need to first ascertain a DOS-compatible "Script Name"
+			$scriptName = str_replace('/', '\\', self::$scriptName);
+		} elseif (self::firstCharacter(self::$scriptFilename) === '/' || self::firstCharacter(self::$scriptFilename) === '.') {
+			// Unix
+			$scriptName = self::$scriptName;
 		} else {
-			$firstCharacter = self::firstCharacter(self::$scriptFilename);
+			// Could not ascertain file system type
+			throw new UnexpectedValueException(
+				'Error on \Cog\Path::initialize() - Could not ascertain file system type from scriptFilename'
+			);
+		}
 
-			if ($firstCharacter === '/' || $firstCharacter === '.') { // Unix
-				// Ensure that ScriptFilename ENDS with ScriptName
-				$substrResult = strpos(self::$scriptFilename, self::$scriptName);
-				$strlenResult = strlen(self::$scriptFilename) - strlen(self::$scriptName);
-				if ($substrResult === $strlenResult) {
-					self::$webRoot = substr(self::$scriptFilename, 0, $strlenResult);
-				} else {
-					throw new UnexpectedValueException(
-						'Error on \Cog\Path::initialize() - scriptFilename does not end with scriptName'
-					);
-				}
-			} else if (substr(self::$scriptFilename, 1, 2) === ':\\') { // Windows
-				// We need to first ascertain a DOS-compatible "Script Name"
-				$scriptName = str_replace('/', '\\', self::$scriptName);
-
-				// Ensure that ScriptFilename ENDS with ScriptName
-				$substrResult = strpos(self::$scriptFilename, $scriptName);
-				$strlenResult = strlen(self::$scriptFilename) - strlen($scriptName);
-				if ($substrResult === $strlenResult) {
-					self::$webRoot = substr(self::$scriptFilename, 0, $strlenResult);
-				} else {
-					throw new UnexpectedValueException(
-						'Error on \Cog\Path::initialize() - scriptFilename does not end with scriptName'
-					);
-				}
-			} else {
-				// Could not ascertain Cog\FileSystem type
-				throw new UnexpectedValueException(
-					'Error on \Cog\Path::initialize() - Could not ascertain file system type from scriptFilename'
-				);
-			}
+		// Ensure that ScriptFilename ENDS with ScriptName
+		$substrResult = strpos(self::$scriptFilename, $scriptName);
+		$strlenResult = \strlen(self::$scriptFilename) - \strlen($scriptName);
+		if ($substrResult === $strlenResult) {
+			self::$webRoot = substr(self::$scriptFilename, 0, $strlenResult);
+		} else {
+			throw new UnexpectedValueException(
+				'Error on \Cog\Path::initialize() - scriptFilename does not end with scriptName'
+			);
 		}
 
 		// Cleanup WebRoot -- path should not end with a trailing / or \
@@ -125,7 +115,7 @@ abstract class Path {
 	 * Returns true if the environment is command line
 	 * @return bool
 	 */
-	public static function isCLI() {
+	public static function isCLI() :  bool {
 		return self::$cliMode;
 	}
 
@@ -134,7 +124,7 @@ abstract class Path {
 	 * @return string|null
 	 */
 	protected static function firstCharacter($string) {
-		if (strlen($string) > 0) {
+		if (\strlen($string) > 0) {
 			return $string[0];
 		}
 		return null;
@@ -145,7 +135,7 @@ abstract class Path {
 	 * @return string|null
 	 */
 	protected static function lastCharacter($string) {
-		$length = strlen($string);
+		$length = \strlen($string);
 		if ($length > 0) {
 			return $string[$length - 1];
 		}
@@ -154,9 +144,9 @@ abstract class Path {
 
 	/**
 	 * For development purposes, this static method outputs all the Paths
-	 * @return string[]
+	 * @return array
 	 */
-	final public static function dump() {
+	final public static function dump() : array {
 		return [
 			'appRoot' => self::$appRoot,
 			'webRoot' => self::$webRoot,
