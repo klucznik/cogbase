@@ -54,14 +54,14 @@ abstract class Type {
 	/**
 	 * @param mixed $item
 	 * @param string $type
-	 * @return bool|string|mixed
+	 * @return bool | string | mixed
 	 * @throws InvalidCastException
 	 */
 	private static function castObjectTo($item, $type) {
 		try {
 			$reflection = new \ReflectionClass($item);
-		} catch (\ReflectionException $exception) {
-			throw new InvalidCastException('Object is not an instance of any class');
+		} catch (\ReflectionException $exception) { // @codeCoverageIgnore
+			throw new InvalidCastException('Object is not an instance of any class'); // @codeCoverageIgnore
 		}
 
 		try {
@@ -73,7 +73,7 @@ abstract class Type {
 					case self::INTEGER:
 						try {
 							return self::cast((string)$item, self::INTEGER);
-						} catch (\Cog\Exception $exception) {
+						} catch (InvalidCastException $exception) {
 							$exception->incrementOffset();
 							throw $exception;
 						}
@@ -83,7 +83,7 @@ abstract class Type {
 						return ($item !== 'false' || !$item);
 				}
 			}
-		} catch (\Cog\Exception $exception) {}
+		} catch (InvalidCastException $exception) {}
 
 		if ($type === self::DATETIME && $item instanceof Carbon) {
 			return $item;
@@ -116,16 +116,16 @@ abstract class Type {
 					return $item;
 				}
 
-				if (null === $item) {
-					return false;
-				}
-
 				if ($item === '') {
 					return false;
 				}
 
 				if (strtolower($item) === 'false') {
 					return false;
+				}
+
+				if (strtolower($item) === 'true') {
+					return true;
 				}
 
 				settype($item, $type);
@@ -185,21 +185,15 @@ abstract class Type {
 	 * @param mixed $item the value, array or object that you want to cast
 	 * @param string $type the type to cast to. Can be a Type::XXX constant (e.g. Type::INTEGER), or the name of a Class
 	 * @return mixed the passed in value/array/object that has been cast to given type
-	 * @throws \Cog\Exception
 	 * @throws InvalidCastException
 	 */
 	final public static function cast($item, $type) {
-		// Automatically Return NULLs
-		if (null === $item) {
-			return null;
-		}
-
 		// Figure out what PHP thinks the type is
 		switch (\gettype($item)) {
 			case self::OBJECT:
 				try {
 					return self::castObjectTo($item, $type);
-				} catch (\Cog\Exception $exception) {
+				} catch (InvalidCastException $exception) {
 					$exception->incrementOffset();
 					throw $exception;
 				}
@@ -210,24 +204,36 @@ abstract class Type {
 			case self::BOOLEAN:
 				try {
 					return self::castValueTo($item, $type);
-				} catch (\Cog\Exception $exception) {
+				} catch (InvalidCastException $exception) {
 					$exception->incrementOffset();
 					throw $exception;
 				}
 
 			case self::ARRAY:
-				try {
 					if ($type === self::ARRAY) {
 						return $item;
 					}
 					throw new InvalidCastException(sprintf('Unable to cast Array to %s', $type));
-				} catch (\Cog\Exception $exception) {
-					$exception->incrementOffset();
-					throw $exception;
+
+			case 'NULL':
+				switch ($type) {
+					case self::STRING:
+						return '';
+					case self::INTEGER:
+						return 0;
+					case self::FLOAT:
+						return 0.0;
+					case self::BOOLEAN:
+						return false;
+					case self::ARRAY:
+						return [];
+
+					default:
+						return null;
 				}
 
 			default:
-				throw new InvalidCastException(sprintf('Unable to determine type of item to be cast: %s', $item));
+				throw new InvalidCastException(sprintf('Unable to determine type of item to be cast: %s', $item)); // @codeCoverageIgnore
 		}
 	}
 
