@@ -23,7 +23,7 @@ abstract class Base {
 			throw new UndefinedPropertyException('GET', $reflection->getName(), $name);
 		} catch (\ReflectionException $exception) {}
 
-		return null;
+		return null; // @codeCoverageIgnore
 	}
 
 	/**
@@ -43,7 +43,7 @@ abstract class Base {
 			throw new UndefinedPropertyException('SET', $reflection->getName(), $name);
 		} catch (\ReflectionException $exception) {}
 
-		return null;
+		return null; // @codeCoverageIgnore
 	}
 
 	public function __isset($name) {

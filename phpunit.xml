@@ -13,4 +13,13 @@
 			<directory suffix=".php">./tests/</directory>
 		</testsuite>
 	</testsuites>
+	<filter>
+		<whitelist>
+			<directory suffix=".php">./src/</directory>
+		</whitelist>
+	</filter>
+
+	<logging>
+		<log type="coverage-html" target="tests/_report" charset="UTF-8" yui="true" highlight="true" lowUpperBound="35" highLowerBound="70" />
+	</logging>
 </phpunit>

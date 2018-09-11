@@ -14,6 +14,11 @@ class TestBase extends \PHPUnit\Framework\TestCase {
 		$this->testObject = null;
 	}
 
+	public function testMissingPropertyOverride() {
+		$this->expectException(UndefinedPropertyException::class);
+		$this->testObject->overrideAttributes([['missingProperty' => 'Setting value']]);
+	}
+
 	public function testArrayOverride() {
 		$this->assertNull($this->testObject->overrideProperty);
 		$this->testObject->overrideAttributes([['overrideProperty' => 'Setting value']]);
@@ -44,14 +49,19 @@ class TestBase extends \PHPUnit\Framework\TestCase {
 		$this->assertEquals($this->testObject->overrideProperty, 'Single quoted value');
 	}
 
-	public function testStringValidity() {
+	public function testStringOverrideValidity() {
 		$this->expectException(\Cog\Exception::class);
 		$this->testObject->overrideAttributes(['overrideProperty="value']);
 	}
 
-	public function testStringValidity2() {
+	public function testStringOverrideValidity2() {
 		$this->expectException(\Cog\Exception::class);
 		$this->testObject->overrideAttributes(["overrideProperty='value"]);
+	}
+
+	public function testStringOverrideValidity3() {
+		$this->expectException(\Cog\Exception::class);
+		$this->testObject->overrideAttributes(["overridePropertyvalue"]);
 	}
 
 	public function testMagicProperty() {
@@ -67,5 +77,10 @@ class TestBase extends \PHPUnit\Framework\TestCase {
 	public function testUndefinedProperty() {
 		$this->expectException(UndefinedPropertyException::class);
 		$this->testObject->MissingProperty;
+	}
+
+	public function testUndefinedPropertySet() {
+		$this->expectException(UndefinedPropertyException::class);
+		$this->testObject->MissingProperty = 'Something';
 	}
 }
