@@ -131,21 +131,12 @@ abstract class CurrentUri {
 	}
 
 	/**
-	 * Returns true if the site is encrypted
-	 * @return bool
-	 */
-	public static function isSSL() : bool {
-		return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
-	}
-
-	/**
 	 * For development purposes, this static method outputs all the Paths
 	 * @return array
 	 */
 	final public static function dump() : array {
 		return [
 			'scheme' => self::$scheme,
-			'ssl' => self::isSSL(),
 			'host' => self::$host,
 			'pathInfoString' => self::$pathInfo,
 			'pathInfoArray' => self::$pathInfoArray,
