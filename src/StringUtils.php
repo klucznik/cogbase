@@ -58,9 +58,7 @@ abstract class StringUtils {
 	 * @return string the XML Node-safe StringUtils
 	 */
 	final public static function xmlEscape($string) : string {
-		if ((mb_strpos($string, '<') !== false) ||
-			(mb_strpos($string, '&') !== false)
-		) {
+		if (self::contains($string, '<')|| self::contains($string, '&')) {
 			$string = str_replace(']]>', ']]]]><![CDATA[>', $string);
 			$string = sprintf('<![CDATA[%s]]>', $string);
 		}
@@ -125,8 +123,6 @@ abstract class StringUtils {
 	 * Global/Central HtmlEntities command to perform the PHP equivalent of htmlentities.
 	 * Feel free to override to specify encoding/quoting specific preferences (e.g. ENT_QUOTES/ENT_NOQUOTES, etc.)
 	 *
-	 * This method is also used by the global print "_p" function.
-	 *
 	 * @param string $text text string to perform html escaping
 	 * @return string the html escaped string
 	 */
@@ -148,18 +144,24 @@ abstract class StringUtils {
 		if ($caseSensitive) {
 			return (mb_strpos($haystack, $needle, 0) !== false);
 		}
+
 		return (mb_stripos($haystack, $needle, 0) !== false);
 	}
 
 	/**
 	 * @param $string string input string
-	 * @param $highlightWords string[] words to highlight in array
+	 * @param $highlightWords string | string[] words to highlight in array or a single word in string
 	 * @return mixed
 	 */
 	public static function highlightWords($string, $highlightWords) {
+		if (\is_string($highlightWords)) {
+			$highlightWords = [$highlightWords];
+		}
+
 		foreach ($highlightWords as $word) {
 			$string = str_ireplace($word, '<b>' . $word . '</b>', $string);
 		}
+
 		return $string;
 	}
 }
