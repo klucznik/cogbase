@@ -4,7 +4,7 @@
 	"description": "Base package providing type casting, various utils and exceptions for use in other cog packages",
 	"require": {
 		"php": ">=7.0",
-		"nesbot/carbon": "^1.33.0",
+		"nesbot/carbon": "^1.0 | ^2.0",
 		"danielstjules/stringy": "^3.1.0",
 		"symfony/filesystem": "^4.0",
 		"symfony/http-foundation": "^4.0",
