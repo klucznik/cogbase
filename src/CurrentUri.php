@@ -2,6 +2,8 @@
 
 use League\Uri\Components\Query;
 use League\Uri\Http as HttpUri;
+use League\Uri\Http;
+use League\Uri\UriException;
 
 abstract class CurrentUri {
 
@@ -45,52 +47,58 @@ abstract class CurrentUri {
 	 * @return void
 	 */
 	public static function initialize() : void {
-		$uri = HttpUri::createFromServer($_SERVER);
+		$uri = null;
 
-		self::$scheme = $uri->getScheme();
-		self::$host = $uri->getHost();
+		try {
+			$uri = HttpUri::createFromServer($_SERVER);
+		} catch (UriException $e) {}
 
-		// Ensure both are set, or we'll have to abort
-		if (!Path::$scriptFilename || !Path::$scriptName) {
-			throw new \UnexpectedValueException('Error on self::initialize() - scriptFilename or scriptName was not set');
-		}
+		if ($uri instanceof Http) {
+			self::$scheme = $uri->getScheme();
+			self::$host = $uri->getHost();
 
-		// Setup queryString
-		self::$queryString = $uri->getQuery();
-
-		$query = new Query(self::$queryString);
-		self::$queryArray = $query->getPairs();
-
-		// Setup path
-		self::$pathInfo = $uri->getPath();
-
-		if (StringUtils::beginsWith(self::$pathInfo, Path::$scriptName)) { //clean up path
-			self::$pathInfo = substr(self::$pathInfo, \strlen(Path::$scriptName));
-		}
-
-		if (self::$pathInfo === false) {
-			self::$pathInfo = '';
-		}
-
-		if (self::$pathInfo !== null && self::$pathInfo !== false && self::$pathInfo !== '') {
-			$pathInfo = self::$pathInfo; // store path info array
-			if (0 === strncmp($pathInfo, '/', 1)) { //begins with '/'
-				$pathInfo = substr($pathInfo, 1); // Remove Trailing '/'
+			// Ensure both are set, or we'll have to abort
+			if (!Path::$scriptFilename || !Path::$scriptName) {
+				throw new \UnexpectedValueException('Error on self::initialize() - scriptFilename or scriptName was not set');
 			}
 
-			self::$pathInfoArray = explode('/', $pathInfo);
-		}
+			// Setup queryString
+			self::$queryString = $uri->getQuery();
 
-		// Setup requestUri
-		if (array_key_exists('REQUEST_URI', $_SERVER)) {
-			self::$requestUri = $_SERVER['REQUEST_URI'];
-		} else {
-			self::$requestUri = sprintf(
-				'%s%s%s',
-				Path::$scriptName,
-				self::$pathInfo,
-				self::$queryString ? sprintf('?%s', self::$queryString) : ''
-			);
+			$query = new Query(self::$queryString);
+			self::$queryArray = $query->getPairs();
+
+			// Setup path
+			self::$pathInfo = $uri->getPath();
+
+			if (StringUtils::beginsWith(self::$pathInfo, Path::$scriptName)) { //clean up path
+				self::$pathInfo = substr(self::$pathInfo, \strlen(Path::$scriptName));
+			}
+
+			if (self::$pathInfo === false) {
+				self::$pathInfo = '';
+			}
+
+			if (self::$pathInfo !== null && self::$pathInfo !== false && self::$pathInfo !== '') {
+				$pathInfo = self::$pathInfo; // store path info array
+				if (0 === strncmp($pathInfo, '/', 1)) { //begins with '/'
+					$pathInfo = substr($pathInfo, 1); // Remove Trailing '/'
+				}
+
+				self::$pathInfoArray = explode('/', $pathInfo);
+			}
+
+			// Setup requestUri
+			if (array_key_exists('REQUEST_URI', $_SERVER)) {
+				self::$requestUri = $_SERVER['REQUEST_URI'];
+			} else {
+				self::$requestUri = sprintf(
+					'%s%s%s',
+					Path::$scriptName,
+					self::$pathInfo,
+					self::$queryString ? sprintf('?%s', self::$queryString) : ''
+				);
+			}
 		}
 	}
 

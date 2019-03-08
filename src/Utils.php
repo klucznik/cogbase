@@ -9,7 +9,7 @@ abstract class Utils {
 	 * This function merges two arrays or adds the value to the and of the given array.
 	 * Return false if first param is not an array
 	 * @param array $toBeExtended
-	 * @param array|mixed $object
+	 * @param array | mixed $object
 	 * @return array
 	 */
 	public static function extendArray(array $toBeExtended, $object) : array {
@@ -29,7 +29,7 @@ abstract class Utils {
 	/**
 	 * Converts a human readable period to a number of seconds.
 	 * For example "1 year", "2 months 1 second", "1 hour 1 second" etc.
-	 * @param $period
+	 * @param string $period
 	 * @return integer number in seconds
 	 * @throws \Exception
 	 */

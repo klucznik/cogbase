@@ -68,7 +68,7 @@ abstract class StringUtils {
 	/**
 	 * Given an integer that represents a byte size, this will return a string
 	 * displaying the value in bytes, KB, MB, GB, TB or PB
-	 * @param integer $bytes
+	 * @param integer | null $bytes
 	 * @param integer $numberOfTenths
 	 * @return string
 	 */
@@ -148,8 +148,8 @@ abstract class StringUtils {
 	}
 
 	/**
-	 * @param $string string input string
-	 * @param $highlightWords string | string[] words to highlight in array or a single word in string
+	 * @param string $string input string
+	 * @param string | string[] $highlightWords words to highlight in array or a single word in string
 	 * @return string
 	 */
 	public static function highlightWords($string, $highlightWords) : string {

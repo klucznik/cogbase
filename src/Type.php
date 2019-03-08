@@ -79,8 +79,7 @@ abstract class Type {
 						}
 
 					case self::BOOLEAN:
-						$item = strtolower(trim((string)$item));
-						return ($item !== 'false' || !$item);
+						return self::castValueTo(strtolower(trim((string)$item)), self::BOOLEAN);
 				}
 			}
 		} catch (InvalidCastException $exception) {}
@@ -102,7 +101,7 @@ abstract class Type {
 	}
 
 	/**
-	 * @param $item
+	 * @param mixed $item
 	 * @param string $type
 	 * @return mixed
 	 * @throws InvalidCastException

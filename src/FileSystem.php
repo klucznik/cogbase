@@ -196,6 +196,11 @@ abstract class FileSystem {
 	public static function sanitizeFilename($filename) : string {
 		$filename = preg_replace("([^\w\s\d\-_~,;:\[\]\(\).])", '', $filename);
 		$filename = preg_replace("([\.]{2,})", '', $filename); // Remove any runs of periods
+
+		if ($filename === null) {
+			return '';
+		}
+
 		return $filename;
 	}
 

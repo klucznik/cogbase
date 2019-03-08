@@ -101,8 +101,8 @@ abstract class Base {
 
 	/**
 	 * Apply the override
-	 * @param $key
-	 * @param $value
+	 * @param string $key
+	 * @param string $value
 	 * @throws Exception
 	 */
 	private function applyOverrideAttributes($key, $value) : void {

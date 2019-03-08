@@ -118,8 +118,8 @@ abstract class Path {
 	}
 
 	/**
-	 * @param $string string input string
-	 * @return string|null
+	 * @param string $string input string
+	 * @return string | null
 	 */
 	protected static function firstCharacter($string) : ?string {
 		if (\strlen($string) > 0) {
@@ -129,8 +129,8 @@ abstract class Path {
 	}
 
 	/**
-	 * @param $string string input string
-	 * @return string|null
+	 * @param string $string input string
+	 * @return string | null
 	 */
 	protected static function lastCharacter($string) : ?string {
 		$length = \strlen($string);
