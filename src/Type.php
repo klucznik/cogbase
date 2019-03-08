@@ -27,8 +27,8 @@ use Stringy\Stringy;
  * and you have a ChildClass that extends ParentClass,
  *        $childClass = new ChildClass();
  *        $parentClass = new ParentClass();
- *        Type::Cast($childClass, 'ParentClass'); // is a legal cast
- *        Type::Cast($parentClass, 'ChildClass'); // will throw an InvalidCastException
+ *        Type::cast($childClass, 'ParentClass'); // is a legal cast
+ *        Type::cast($parentClass, 'ChildClass'); // will throw an InvalidCastException
  *
  * For values, specifically int to string conversion, one different between
  * Type::Cast and PHP (in order to add structure) is that if an integer contains
@@ -43,13 +43,13 @@ use Stringy\Stringy;
  * overly relaxed type conversions.
  */
 abstract class Type {
-	const STRING = 'string';
-	const INTEGER = 'integer';
-	const FLOAT = 'double';
-	const BOOLEAN = 'boolean';
-	const OBJECT = 'object';
-	const ARRAY = 'array';
-	const DATETIME = 'Carbon';
+	public const STRING = 'string';
+	public const INTEGER = 'integer';
+	public const FLOAT = 'double';
+	public const BOOLEAN = 'boolean';
+	public const OBJECT = 'object';
+	public const ARRAY = 'array';
+	public const DATETIME = 'Carbon';
 
 	/**
 	 * @param mixed $item
@@ -241,14 +241,13 @@ abstract class Type {
 	 * Used by the Code Generator to allow for the code generation of
 	 * the actual "Type::XXX" constant, instead of the text of the constant,
 	 * in generated code.
-	 *
 	 * It is rare for Constant to be used manually outside of Code Generation.
 	 *
 	 * @param string $type the type to convert to 'constant' form
 	 * @return string the text of the Type:XXX Constant
 	 * @throws InvalidCastException
 	 */
-	final public static function constant($type) {
+	final public static function constant($type) : string {
 		switch ($type) {
 			case self::OBJECT:
 				return 'Type::OBJECT';

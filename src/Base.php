@@ -64,7 +64,7 @@ abstract class Base {
 	 * @return void
 	 * @throws \Cog\Exception
 	 */
-	final public function overrideAttributes(array $overrideArray) {
+	final public function overrideAttributes(array $overrideArray) : void {
 		// Iterate through the OverrideAttribute Array
 		foreach ($overrideArray as $overrideItem) {
 			if (\is_array($overrideItem)) {
@@ -105,7 +105,7 @@ abstract class Base {
 	 * @param $value
 	 * @throws Exception
 	 */
-	private function applyOverrideAttributes($key, $value) {
+	private function applyOverrideAttributes($key, $value) : void {
 		try {
 			$this->$key = $value;
 		} catch (\Cog\Exception $exception) {

@@ -75,7 +75,7 @@ class Exception extends \Exception {
 		$this->updateOffset();
 	}
 
-	private function updateOffset() {
+	private function updateOffset() : void {
 		if (array_key_exists('file', $this->traceArray[$this->offset])) {
 			$this->file = $this->traceArray[$this->offset]['file'];
 		}
@@ -85,7 +85,7 @@ class Exception extends \Exception {
 		}
 	}
 
-	public function incrementOffset() {
+	public function incrementOffset() : void {
 		$this->offset++;
 		$this->file = '';
 		$this->line = '';
@@ -93,7 +93,7 @@ class Exception extends \Exception {
 		$this->updateOffset();
 	}
 
-	public function decrementOffset() {
+	public function decrementOffset() : void {
 		$this->offset--;
 		$this->file = '';
 		$this->line = '';

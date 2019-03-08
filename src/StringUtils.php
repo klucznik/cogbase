@@ -11,7 +11,7 @@ abstract class StringUtils {
 	 * @param string $string
 	 * @return string | null the first character, or null
 	 */
-	final public static function firstCharacter($string) {
+	final public static function firstCharacter($string) : ?string {
 		if (mb_strlen($string) > 0) {
 			return mb_substr($string, 0, 1);
 		}
@@ -23,9 +23,8 @@ abstract class StringUtils {
 	 * @param string $string
 	 * @return string | null the last character, or null
 	 */
-	final public static function lastCharacter($string) {
-		$length = mb_strlen($string);
-		if ($length > 0) {
+	final public static function lastCharacter($string) : ?string  {
+		if (mb_strlen($string) > 0) {
 			return mb_substr($string, -1);
 		}
 		return null;
@@ -151,9 +150,9 @@ abstract class StringUtils {
 	/**
 	 * @param $string string input string
 	 * @param $highlightWords string | string[] words to highlight in array or a single word in string
-	 * @return mixed
+	 * @return string
 	 */
-	public static function highlightWords($string, $highlightWords) {
+	public static function highlightWords($string, $highlightWords) : string {
 		if (\is_string($highlightWords)) {
 			$highlightWords = [$highlightWords];
 		}

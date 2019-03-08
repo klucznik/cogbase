@@ -44,7 +44,7 @@ abstract class CurrentUri {
 	 * @throws \UnexpectedValueException
 	 * @return void
 	 */
-	public static function initialize() {
+	public static function initialize() : void {
 		$uri = HttpUri::createFromServer($_SERVER);
 
 		self::$scheme = $uri->getScheme();
@@ -122,7 +122,7 @@ abstract class CurrentUri {
 	 * @param string $item
 	 * @return string | null
 	 */
-	public static function queryString($item) {
+	public static function queryString($item) : ?string {
 		if (array_key_exists($item, self::$queryArray)) {
 			return self::$queryArray[$item];
 		}

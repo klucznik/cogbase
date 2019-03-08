@@ -38,7 +38,7 @@ abstract class Path {
 	 * @throws \UnexpectedValueException
 	 * @return void
 	 */
-	public static function initialize() {
+	public static function initialize() : void {
 		// Are we running as CLI?
 		self::$cliMode = !array_key_exists('SERVER_PROTOCOL', $_SERVER);
 
@@ -51,7 +51,7 @@ abstract class Path {
 		self::$appRoot = \dirname(self::$webRoot);
 	}
 
-	protected static function initializeCli() {
+	protected static function initializeCli() : void {
 		$path = \dirname(__DIR__);
 		while (is_dir($path . '/www') === false) {
 			$path = \dirname($path);
@@ -59,7 +59,7 @@ abstract class Path {
 		self::$webRoot = $path . '/www';
 	}
 
-	protected static function initializeWeb() {
+	protected static function initializeWeb() : void {
 		// Setup ScriptFilename and ScriptName
 		self::$scriptFilename = $_SERVER['SCRIPT_FILENAME'];
 
@@ -121,7 +121,7 @@ abstract class Path {
 	 * @param $string string input string
 	 * @return string|null
 	 */
-	protected static function firstCharacter($string) {
+	protected static function firstCharacter($string) : ?string {
 		if (\strlen($string) > 0) {
 			return $string[0];
 		}
@@ -132,7 +132,7 @@ abstract class Path {
 	 * @param $string string input string
 	 * @return string|null
 	 */
-	protected static function lastCharacter($string) {
+	protected static function lastCharacter($string) : ?string {
 		$length = \strlen($string);
 		if ($length > 0) {
 			return $string[$length - 1];
