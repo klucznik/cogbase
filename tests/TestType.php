@@ -8,7 +8,12 @@ class TestType extends \PHPUnit\Framework\TestCase {
 
 	public function testShortcuts() {
 		$this->assertEquals(Type::castArray(['gffdsg']), ['gffdsg']);
-		$this->assertFalse(Type::castBool(null, false));
+
+		$this->assertEquals(Type::castArrayStrict(null), []);
+		$this->assertFalse(Type::castBoolStrict(null, false));
+
+		$this->assertNull(Type::castArray(null));
+		$this->assertNull(Type::castBool(null));
 	}
 
 	public function testNullCast() {

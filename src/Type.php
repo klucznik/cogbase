@@ -236,8 +236,30 @@ abstract class Type {
 	 * @return array
 	 * @throws InvalidCastException
 	 */
-	final public static function castArray($item): array {
+	final public static function castArrayStrict($item): array {
 		return self::cast($item, self::ARRAY, false);
+	}
+
+	/**
+	 * Shortcut for casting variable to array trough cast function.
+	 * This function will preserve null value.
+	 * @param mixed $item the value, array or object that you want to cast
+	 * @return array | null
+	 * @throws InvalidCastException
+	 */
+	final public static function castArray($item): ?array {
+		return self::cast($item, self::ARRAY);
+	}
+
+	/**
+	 * Shortcut for casting variable to bool trough cast function.
+	 * This function will not preserve null value.
+	 * @param mixed $item the value, array or object that you want to cast
+	 * @return bool | null
+	 * @throws InvalidCastException
+	 */
+	final public static function castBoolStrict($item): bool {
+		return self::cast($item, self::BOOLEAN, false);
 	}
 
 	/**
@@ -247,8 +269,8 @@ abstract class Type {
 	 * @return bool
 	 * @throws InvalidCastException
 	 */
-	final public static function castBool($item): bool {
-		return self::cast($item, self::BOOLEAN, false);
+	final public static function castBool($item): ?bool {
+		return self::cast($item, self::BOOLEAN);
 	}
 
 	/**
