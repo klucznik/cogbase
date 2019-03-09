@@ -153,18 +153,6 @@ abstract class Type {
 
 			case self::STRING:
 				settype($item, $type);
-
-				/*
-				// Check to make sure the value hasn't changed significantly
-				$test = $item;
-				settype($test, gettype($original));
-
-				// Has it?
-				if ($test != $original)
-					// Yes -- therefore this is an invalid cast
-					throw new InvalidCastException(sprintf('Unable to cast %s value to %s: %s', $itemType, $type, $original));
-				*/
-
 				return $item;
 
 			default:
@@ -183,10 +171,16 @@ abstract class Type {
 	 *
 	 * @param mixed $item the value, array or object that you want to cast
 	 * @param string $type the type to cast to. Can be a Type::XXX constant (e.g. Type::INTEGER), or the name of a Class
+	 * @param bool $preserveNull By default preserve the null value of the $item, if set to false it will cast null to a given type
 	 * @return mixed the passed in value/array/object that has been cast to given type
 	 * @throws InvalidCastException
 	 */
-	final public static function cast($item, $type) {
+	final public static function cast($item, $type, $preserveNull = true) {
+		// return nulls if needed
+		if ($preserveNull && $item === null) {
+			return null;
+		}
+
 		// Figure out what PHP thinks the type is
 		switch (\gettype($item)) {
 			case self::OBJECT:

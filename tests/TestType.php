@@ -7,19 +7,36 @@ use Stringy\Stringy;
 class TestType extends \PHPUnit\Framework\TestCase {
 
 	public function testNullCast() {
-		$this->assertFalse(Type::cast(null, Type::BOOLEAN));
-		$this->assertEmpty(Type::cast(null, Type::STRING));
-		$this->assertEquals(Type::cast(null, Type::INTEGER), 0);
-		$this->assertEquals(Type::cast(null, Type::FLOAT), 0.0);
-		$this->assertEquals(Type::cast(null, Type::ARRAY), []);
+		$this->assertFalse(Type::cast(null, Type::BOOLEAN, false));
+		$this->assertEmpty(Type::cast(null, Type::STRING, false));
+		$this->assertEquals(Type::cast(null, Type::INTEGER, false), 0);
+		$this->assertEquals(Type::cast(null, Type::FLOAT, false), 0.0);
+		$this->assertEquals(Type::cast(null, Type::ARRAY, false), []);
+		$this->assertNull(Type::cast(null, Type::OBJECT, false));
+	}
+
+	public function testNullCastWithPreservation() {
+		$this->assertNull(Type::cast(null, Type::BOOLEAN));
+		$this->assertNull(Type::cast(null, Type::STRING));
+		$this->assertNull(Type::cast(null, Type::INTEGER));
+		$this->assertNull(Type::cast(null, Type::FLOAT));
+		$this->assertNull(Type::cast(null, Type::ARRAY));
 		$this->assertNull(Type::cast(null, Type::OBJECT));
 	}
 
-	public function testStringCast() {
+	public function testBooleanCast() {
 		$this->assertTrue(Type::cast('string', Type::BOOLEAN));
 		$this->assertTrue(Type::cast(1, Type::BOOLEAN));
 		$this->assertFalse(Type::cast(0, Type::BOOLEAN));
-		$this->assertFalse(Type::cast(null, Type::BOOLEAN));
+		$this->assertFalse(Type::cast(null, Type::BOOLEAN, false));
+	}
+
+	public function testStringCast() {
+		$this->assertEquals(Type::cast('string', Type::STRING), 'string');
+		$this->assertEquals(Type::cast('string', Type::STRING), "string");
+		$this->assertEquals(Type::cast(1, Type::STRING), '1');
+		$this->assertEquals(Type::cast(0, Type::STRING), '0');
+		$this->assertEquals(Type::cast(null, Type::STRING, false), '');
 	}
 
 	public function testConstantCodeGenerator() {
