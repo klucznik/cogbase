@@ -6,6 +6,11 @@ use Stringy\Stringy;
 
 class TestType extends \PHPUnit\Framework\TestCase {
 
+	public function testShortcuts() {
+		$this->assertEquals(Type::castArray(['gffdsg']), ['gffdsg']);
+		$this->assertFalse(Type::castBool(null, false));
+	}
+
 	public function testNullCast() {
 		$this->assertFalse(Type::cast(null, Type::BOOLEAN, false));
 		$this->assertEmpty(Type::cast(null, Type::STRING, false));
