@@ -230,25 +230,25 @@ abstract class Type {
 	}
 
 	/**
-	 * Shortcut for casting variable to array trough cast function
+	 * Shortcut for casting variable to array trough cast function.
+	 * This function will not preserve null value.
 	 * @param mixed $item the value, array or object that you want to cast
-	 * @param bool $preserveNull By default preserve the null value of the $item, if set to false it will cast null to a given type
-	 * @return array | null
+	 * @return array
 	 * @throws InvalidCastException
 	 */
-	final public static function castArray($item, $preserveNull = true): ?array {
-		return self::cast($item, self::ARRAY, $preserveNull);
+	final public static function castArray($item): array {
+		return self::cast($item, self::ARRAY, false);
 	}
 
 	/**
-	 * Shortcut for casting variable to bool trough cast function
+	 * Shortcut for casting variable to bool trough cast function.
+	 * This function will not preserve null value.
 	 * @param mixed $item the value, array or object that you want to cast
-	 * @param bool $preserveNull By default preserve the null value of the $item, if set to false it will cast null to a given type
-	 * @return bool | null
+	 * @return bool
 	 * @throws InvalidCastException
 	 */
-	final public static function castBool($item, $preserveNull = true): ?bool {
-		return self::cast($item, self::BOOLEAN, $preserveNull);
+	final public static function castBool($item): bool {
+		return self::cast($item, self::BOOLEAN, false);
 	}
 
 	/**
