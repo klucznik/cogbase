@@ -161,8 +161,7 @@ abstract class Type {
 	}
 
 	/**
-	 * Used to cast a variable to another type.  Allows for moderate
-	 * support of strongly-named types.
+	 * Used to cast a variable to another type. Allows for moderate support of strongly-named types.
 	 *
 	 * Will throw an exception if the cast fails, causes unexpected side effects,
 	 * if attempting to cast an object to a value (or vice versa), or if an object
@@ -228,6 +227,28 @@ abstract class Type {
 			default:
 				throw new InvalidCastException(sprintf('Unable to determine type of item to be cast: %s', $item)); // @codeCoverageIgnore
 		}
+	}
+
+	/**
+	 * Shortcut for casting variable to array trough cast function
+	 * @param mixed $item the value, array or object that you want to cast
+	 * @param bool $preserveNull By default preserve the null value of the $item, if set to false it will cast null to a given type
+	 * @return array | null
+	 * @throws InvalidCastException
+	 */
+	final public static function castArray($item, $preserveNull = true): ?array {
+		self::cast($item, self::ARRAY, $preserveNull);
+	}
+
+	/**
+	 * Shortcut for casting variable to bool trough cast function
+	 * @param mixed $item the value, array or object that you want to cast
+	 * @param bool $preserveNull By default preserve the null value of the $item, if set to false it will cast null to a given type
+	 * @return array | null
+	 * @throws InvalidCastException
+	 */
+	final public static function castBool($item, $preserveNull = true): ?bool {
+		self::cast($item, self::BOOLEAN, $preserveNull);
 	}
 
 	/**
