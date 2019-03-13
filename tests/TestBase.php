@@ -6,11 +6,11 @@ class TestBase extends \PHPUnit\Framework\TestCase {
 
 	public $testObject;
 
-	public function setUp() {
+	public function setUp(): void {
 		$this->testObject = new BaseObject();
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		$this->testObject = null;
 	}
 
