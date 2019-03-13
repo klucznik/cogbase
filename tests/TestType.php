@@ -2,7 +2,6 @@
 
 use Cog\Exceptions\InvalidCastException;
 use Cog\Type;
-use Stringy\Stringy;
 
 class TestType extends \PHPUnit\Framework\TestCase {
 
@@ -85,7 +84,9 @@ class TestType extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function testObjectCast3() {
-		$this->assertEquals(Type::cast(new Stringy('stringy'), Type::STRING), 'stringy');
+		if (class_exists('\Stringy\Stringy')) {
+			$this->assertEquals(Type::cast(new \Stringy\Stringy('stringy'), Type::STRING), 'stringy');
+		}
 
 		$date = new Carbon\Carbon('2001-10-10');
 		$this->assertEquals(Type::cast($date, Type::DATETIME), $date);

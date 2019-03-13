@@ -2,7 +2,6 @@
 
 use Cog\Exceptions\InvalidCastException;
 use Carbon\Carbon;
-use Stringy\Stringy;
 
 /**
  * Type Library to add some support for strongly named types.
@@ -89,7 +88,7 @@ abstract class Type {
 		}
 
 		//convert stringy to string
-		if ($type === self::STRING && $item instanceof Stringy) {
+		if ($type === self::STRING && class_exists('\Stringy\Stringy') &&$item instanceof \Stringy\Stringy) {
 			return (string)$item;
 		}
 
