@@ -2,6 +2,8 @@
 
 use Cog\Exceptions\InvalidCastException;
 use Carbon\Carbon;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * Type Library to add some support for strongly named types.
@@ -42,6 +44,7 @@ use Carbon\Carbon;
  * overly relaxed type conversions.
  */
 abstract class Type {
+
 	public const STRING = 'string';
 	public const INTEGER = 'integer';
 	public const FLOAT = 'double';
@@ -58,8 +61,8 @@ abstract class Type {
 	 */
 	private static function castObjectTo($item, $type) {
 		try {
-			$reflection = new \ReflectionClass($item);
-		} catch (\ReflectionException $exception) { // @codeCoverageIgnore
+			$reflection = new ReflectionClass($item);
+		} catch (ReflectionException $exception) { // @codeCoverageIgnore
 			throw new InvalidCastException('Object is not an instance of any class'); // @codeCoverageIgnore
 		}
 
@@ -106,7 +109,7 @@ abstract class Type {
 	 * @throws InvalidCastException
 	 */
 	private static function castValueTo($item, $type) {
-		$itemType = \gettype($item);
+		$itemType = gettype($item);
 
 		switch ($type) {
 			case self::BOOLEAN:
@@ -140,7 +143,7 @@ abstract class Type {
 
 				// Check to make sure the value hasn't changed significantly
 				$mixTest = $item;
-				settype($mixTest, \gettype($original));
+				settype($mixTest, gettype($original));
 
 				// Has it?
 				if ($mixTest != $original) {
@@ -180,7 +183,7 @@ abstract class Type {
 		}
 
 		// Figure out what PHP thinks the type is
-		switch (\gettype($item)) {
+		switch (gettype($item)) {
 			case self::OBJECT:
 				try {
 					return self::castObjectTo($item, $type);
@@ -282,7 +285,7 @@ abstract class Type {
 	 * @return string the text of the Type:XXX Constant
 	 * @throws InvalidCastException
 	 */
-	final public static function constant($type) : string {
+	final public static function constant($type): string {
 		switch ($type) {
 			case self::OBJECT:
 				return 'Type::OBJECT';

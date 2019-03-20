@@ -1,8 +1,9 @@
 <?php
 
 use Cog\StringUtils;
+use PHPUnit\Framework\TestCase;
 
-class TestStringUtils extends \PHPUnit\Framework\TestCase {
+class TestStringUtils extends TestCase {
 
 	protected $string = 'here is the colorful kahless?';
 	protected $multiByteString = 'żółć gęślą jaźń';

@@ -11,7 +11,7 @@ abstract class StringUtils {
 	 * @param string $string
 	 * @return string | null the first character, or null
 	 */
-	final public static function firstCharacter($string) : ?string {
+	final public static function firstCharacter($string): ?string {
 		if (mb_strlen($string) > 0) {
 			return mb_substr($string, 0, 1);
 		}
@@ -23,7 +23,7 @@ abstract class StringUtils {
 	 * @param string $string
 	 * @return string | null the last character, or null
 	 */
-	final public static function lastCharacter($string) : ?string  {
+	final public static function lastCharacter($string): ?string  {
 		if (mb_strlen($string) > 0) {
 			return mb_substr($string, -1);
 		}
@@ -36,7 +36,7 @@ abstract class StringUtils {
 	 * @param string $needle beginning of the string to test against
 	 * @return boolean
 	 */
-	final public static function beginsWith($haystack, $needle) : bool {
+	final public static function beginsWith($haystack, $needle): bool {
 		return (0 === mb_strpos($haystack, $needle));
 	}
 
@@ -46,7 +46,7 @@ abstract class StringUtils {
 	 * @param string $needle beginning of the string to test against
 	 * @return boolean
 	 */
-	final public static function endsWith($haystack, $needle) : bool {
+	final public static function endsWith($haystack, $needle): bool {
 		$length = mb_strlen($needle);
 		return ($length === 0 || mb_substr($haystack, -$length) === $needle);
 	}
@@ -56,7 +56,7 @@ abstract class StringUtils {
 	 * @param string $string string to escape
 	 * @return string the XML Node-safe StringUtils
 	 */
-	final public static function xmlEscape($string) : string {
+	final public static function xmlEscape($string): string {
 		if (self::contains($string, '<')|| self::contains($string, '&')) {
 			$string = str_replace(']]>', ']]]]><![CDATA[>', $string);
 			$string = sprintf('<![CDATA[%s]]>', $string);
@@ -72,7 +72,7 @@ abstract class StringUtils {
 	 * @param integer $numberOfTenths
 	 * @return string
 	 */
-	public static function getByteSize($bytes, $numberOfTenths = 1) : string {
+	public static function getByteSize($bytes, $numberOfTenths = 1): string {
 		if (null === $bytes) {
 			return 'N/A';
 		}
@@ -113,7 +113,7 @@ abstract class StringUtils {
 	 * @param integer $maximumLength Maximum acceptable length
 	 * @return boolean
 	 */
-	public static function isLengthBetween($string, $minimumLength, $maximumLength) : bool {
+	public static function isLengthBetween($string, $minimumLength, $maximumLength): bool {
 		$length = mb_strlen($string);
 		return ($length >= $minimumLength && $length <= $maximumLength);
 	}
@@ -125,7 +125,7 @@ abstract class StringUtils {
 	 * @param string $text text string to perform html escaping
 	 * @return string the html escaped string
 	 */
-	public static function htmlEntities($text) : string {
+	public static function htmlEntities($text): string {
 		return htmlentities($text, ENT_IGNORE, 'UTF-8');
 	}
 
@@ -139,7 +139,7 @@ abstract class StringUtils {
 	 * @param  bool   $caseSensitive Whether or not to enforce case-sensitivity
 	 * @return bool   Whether or not $haystack contains $needle
 	 */
-	public static function contains($haystack, $needle, $caseSensitive = true) : bool {
+	public static function contains($haystack, $needle, $caseSensitive = true): bool {
 		if ($caseSensitive) {
 			return (mb_strpos($haystack, $needle, 0) !== false);
 		}
@@ -152,8 +152,8 @@ abstract class StringUtils {
 	 * @param string | string[] $highlightWords words to highlight in array or a single word in string
 	 * @return string
 	 */
-	public static function highlightWords($string, $highlightWords) : string {
-		if (\is_string($highlightWords)) {
+	public static function highlightWords($string, $highlightWords): string {
+		if (is_string($highlightWords)) {
 			$highlightWords = [$highlightWords];
 		}
 

@@ -1,6 +1,8 @@
 <?php namespace Cog;
 
 use Cog\Exceptions\UndefinedPropertyException;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * This is the main exception to be thrown by any
@@ -43,6 +45,7 @@ use Cog\Exceptions\UndefinedPropertyException;
  * @property-read array $traceArray
  */
 class Exception extends \Exception {
+
 	/** @var int */
 	private $offset;
 
@@ -105,7 +108,7 @@ class Exception extends \Exception {
 	 * @param string $name
 	 * @return array|int|mixed
 	 * @throws UndefinedPropertyException
-	 * @throws \ReflectionException
+	 * @throws ReflectionException
 	 */
 	public function __get($name) {
 		switch ($name) {
@@ -114,7 +117,7 @@ class Exception extends \Exception {
 			case 'traceArray': return $this->traceArray;
 
 			default:
-				$reflection = new \ReflectionClass($this);
+				$reflection = new ReflectionClass($this);
 				throw new UndefinedPropertyException('GET', $reflection->getName(), $name);
 		}
 	}
@@ -124,10 +127,10 @@ class Exception extends \Exception {
 	 * @param mixed $value
 	 * @return array|int|mixed
 	 * @throws UndefinedPropertyException
-	 * @throws \ReflectionException
+	 * @throws ReflectionException
 	 */
 	public function __set($name, $value) {
-		$reflection = new \ReflectionClass($this);
+		$reflection = new ReflectionClass($this);
 		throw new UndefinedPropertyException('SET', $reflection->getName(), $name);
 	}
 

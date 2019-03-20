@@ -1,9 +1,11 @@
 <?php
 
+use Cog\Base;
+
 /**
  * @property string $MagicProperty
  */
-class BaseObject extends \Cog\Base {
+class BaseObject extends Base {
 
 	private $property;
 	public $overrideProperty;

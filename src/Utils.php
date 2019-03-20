@@ -1,5 +1,7 @@
 <?php namespace Cog;
 
+use DateTime;
+
 /**
  * Other helpful functions
  */
@@ -12,7 +14,7 @@ abstract class Utils {
 	 * @param array | mixed $object
 	 * @return array
 	 */
-	public static function extendArray(array $toBeExtended, $object) : array {
+	public static function extendArray(array $toBeExtended, $object): array {
 		if ($object === null) {
 			return $toBeExtended;
 		}
@@ -31,9 +33,12 @@ abstract class Utils {
 	 * For example "1 year", "2 months 1 second", "1 hour 1 second" etc.
 	 * @param string $period
 	 * @return integer number in seconds
-	 * @throws \Exception
 	 */
-	public static function getTimePeriodInSeconds($period) : int {
-		return abs((new \DateTime($period))->getTimestamp() - (new \DateTime)->getTimestamp());
+	public static function getTimePeriodInSeconds($period): int {
+		try {
+			return abs((new DateTime($period))->getTimestamp() - (new DateTime)->getTimestamp());
+		} catch (\Exception $e) {
+			return 0;
+		}
 	}
 }

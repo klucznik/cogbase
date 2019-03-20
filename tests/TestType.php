@@ -2,8 +2,9 @@
 
 use Cog\Exceptions\InvalidCastException;
 use Cog\Type;
+use PHPUnit\Framework\TestCase;
 
-class TestType extends \PHPUnit\Framework\TestCase {
+class TestType extends TestCase {
 
 	public function testShortcuts() {
 		$this->assertEquals(Type::castArray(['gffdsg']), ['gffdsg']);

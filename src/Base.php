@@ -1,6 +1,8 @@
 <?php namespace Cog;
 
 use Cog\Exceptions\UndefinedPropertyException;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * This is the Base Class for ALL classes in the system.  It provides
@@ -19,9 +21,9 @@ abstract class Base {
 	 */
 	public function __get($name) {
 		try {
-			$reflection = new \ReflectionClass($this);
+			$reflection = new ReflectionClass($this);
 			throw new UndefinedPropertyException('GET', $reflection->getName(), $name);
-		} catch (\ReflectionException $exception) {}
+		} catch (ReflectionException $exception) {}
 
 		return null; // @codeCoverageIgnore
 	}
@@ -39,9 +41,9 @@ abstract class Base {
 	*/
 	public function __set($name, $value) {
 		try {
-			$reflection = new \ReflectionClass($this);
+			$reflection = new ReflectionClass($this);
 			throw new UndefinedPropertyException('SET', $reflection->getName(), $name);
-		} catch (\ReflectionException $exception) {}
+		} catch (ReflectionException $exception) {}
 
 		return null; // @codeCoverageIgnore
 	}
@@ -64,10 +66,10 @@ abstract class Base {
 	 * @return void
 	 * @throws \Cog\Exception
 	 */
-	final public function overrideAttributes(array $overrideArray) : void {
+	final public function overrideAttributes(array $overrideArray): void {
 		// Iterate through the OverrideAttribute Array
 		foreach ($overrideArray as $overrideItem) {
-			if (\is_array($overrideItem)) {
+			if (is_array($overrideItem)) {
 				foreach ($overrideItem as $key => $value) {
 					$this->applyOverrideAttributes($key, $value);
 				}
@@ -103,9 +105,9 @@ abstract class Base {
 	 * Apply the override
 	 * @param string $key
 	 * @param string $value
-	 * @throws Exception
+	 * @throws \Cog\Exception
 	 */
-	private function applyOverrideAttributes($key, $value) : void {
+	private function applyOverrideAttributes($key, $value): void {
 		try {
 			$this->$key = $value;
 		} catch (\Cog\Exception $exception) {

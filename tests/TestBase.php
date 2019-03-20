@@ -1,8 +1,9 @@
-<?php
+<?php require_once __DIR__ . '/BaseObject.php';
 
 use Cog\Exceptions\UndefinedPropertyException;
+use PHPUnit\Framework\TestCase;
 
-class TestBase extends \PHPUnit\Framework\TestCase {
+class TestBase extends TestCase {
 
 	public $testObject;
 

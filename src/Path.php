@@ -1,5 +1,7 @@
 <?php namespace Cog;
 
+use UnexpectedValueException;
+
 abstract class Path {
 	/**
 	 * Path of the "web root" of the web server, points to the /www subdirectory
@@ -35,10 +37,10 @@ abstract class Path {
 	/**
 	 * This should be the first call to initialize all the static variables The application object also has
 	 * static methods that are miscellaneous web development utilities, etc.
-	 * @throws \UnexpectedValueException
+	 * @throws UnexpectedValueException
 	 * @return void
 	 */
-	public static function initialize() : void {
+	public static function initialize(): void {
 		// Are we running as CLI?
 		self::$cliMode = !array_key_exists('SERVER_PROTOCOL', $_SERVER);
 
@@ -48,13 +50,13 @@ abstract class Path {
 			self::initializeWeb();
 		}
 
-		self::$appRoot = \dirname(self::$webRoot);
+		self::$appRoot = dirname(self::$webRoot);
 	}
 
-	protected static function initializeCli() : void {
-		$path = \dirname(__DIR__);
+	protected static function initializeCli(): void {
+		$path = dirname(__DIR__);
 		while (is_dir($path . '/www') === false) {
-			$path = \dirname($path);
+			$path = dirname($path);
 		}
 		self::$webRoot = $path . '/www';
 	}
@@ -71,7 +73,7 @@ abstract class Path {
 
 		// Ensure both are set, or we'll have to abort
 		if (!self::$scriptFilename || !self::$scriptName) {
-			throw new \UnexpectedValueException('Error on \Cog\Path::initialize() - scriptFilename or scriptName was not set');
+			throw new UnexpectedValueException('Error on Cog\Path::initialize() - scriptFilename or scriptName was not set');
 		}
 
 		// Setup WebRoot -- WebRoot will NOT be set and therefore needs to be magically
@@ -79,27 +81,27 @@ abstract class Path {
 			self::$webRoot = $_SERVER['DOCUMENT_ROOT'];
 		}
 
+		$fc = self::firstCharacter(self::$scriptFilename);
+
 		if (substr(self::$scriptFilename, 1, 2) === ':\\') {
 			// looks like Windows files system, we need to first ascertain a DOS-compatible "Script Name"
 			$scriptName = str_replace('/', '\\', self::$scriptName);
-		} elseif (self::firstCharacter(self::$scriptFilename) === '/' || self::firstCharacter(self::$scriptFilename) === '.') {
-			// Unix
+		} elseif ($fc === '/' || $fc === '.') { // Unix
 			$scriptName = self::$scriptName;
 		} else {
-			// Could not ascertain file system type
-			throw new \UnexpectedValueException(
-				'Error on \Cog\Path::initialize() - Could not ascertain file system type from scriptFilename'
+			throw new UnexpectedValueException(
+				'Error on Cog\Path::initialize() - Could not ascertain file system type from scriptFilename'
 			);
 		}
 
 		// Ensure that ScriptFilename ENDS with ScriptName
 		$substrResult = strpos(self::$scriptFilename, $scriptName);
-		$strlenResult = \strlen(self::$scriptFilename) - \strlen($scriptName);
+		$strlenResult = strlen(self::$scriptFilename) - strlen($scriptName);
 		if ($substrResult === $strlenResult) {
 			self::$webRoot = substr(self::$scriptFilename, 0, $strlenResult);
 		} else {
-			throw new \UnexpectedValueException(
-				'Error on \Cog\Path::initialize() - scriptFilename does not end with scriptName'
+			throw new UnexpectedValueException(
+				'Error on Cog\Path::initialize() - scriptFilename does not end with scriptName'
 			);
 		}
 
@@ -113,7 +115,7 @@ abstract class Path {
 	 * Returns true if the environment is command line
 	 * @return bool
 	 */
-	public static function isCLI() :  bool {
+	public static function isCLI(): bool {
 		return self::$cliMode;
 	}
 
@@ -121,8 +123,8 @@ abstract class Path {
 	 * @param string $string input string
 	 * @return string | null
 	 */
-	protected static function firstCharacter($string) : ?string {
-		if (\strlen($string) > 0) {
+	protected static function firstCharacter($string): ?string {
+		if (strlen($string) > 0) {
 			return $string[0];
 		}
 		return null;
@@ -132,8 +134,8 @@ abstract class Path {
 	 * @param string $string input string
 	 * @return string | null
 	 */
-	protected static function lastCharacter($string) : ?string {
-		$length = \strlen($string);
+	protected static function lastCharacter($string): ?string {
+		$length = strlen($string);
 		if ($length > 0) {
 			return $string[$length - 1];
 		}
@@ -144,7 +146,7 @@ abstract class Path {
 	 * For development purposes, this static method outputs all the Paths
 	 * @return array
 	 */
-	final public static function dump() : array {
+	final public static function dump(): array {
 		return [
 			'appRoot' => self::$appRoot,
 			'webRoot' => self::$webRoot,
