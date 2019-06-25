@@ -1,4 +1,6 @@
-<?php namespace Cog;
+<?php
+
+namespace Cog;
 
 use League\Uri\Components\Query;
 use League\Uri\Http as HttpUri;

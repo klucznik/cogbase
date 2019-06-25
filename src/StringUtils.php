@@ -1,4 +1,6 @@
-<?php namespace Cog;
+<?php
+
+namespace Cog;
 
 /**
  * An abstract utility class to handle string manipulation.  All methods

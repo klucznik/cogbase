@@ -1,4 +1,6 @@
-<?php namespace Cog;
+<?php
+
+namespace Cog;
 
 use Cog\Exceptions\InvalidCastException;
 use Carbon\Carbon;

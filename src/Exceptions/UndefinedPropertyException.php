@@ -1,4 +1,6 @@
-<?php namespace Cog\Exceptions;
+<?php
+
+namespace Cog\Exceptions;
 
 use Cog\Exception;
 

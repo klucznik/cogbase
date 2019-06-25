@@ -1,9 +1,14 @@
-<?php namespace Cog;
+<?php
 
+namespace Cog;
+
+use DirectoryIterator;
+use LogicException;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
+use Traversable;
 
 abstract class FileSystem {
 
@@ -35,7 +40,7 @@ abstract class FileSystem {
 
 	/**
 	 * Creates a directory recursively.
-	 * @param string|array|\Traversable $dirs The directory path
+	 * @param string|array|Traversable $dirs The directory path
 	 * @param int $mode The directory mode
 	 * @return void
 	 * @throws IOException On any directory creation failure
@@ -47,7 +52,7 @@ abstract class FileSystem {
 
 	/**
 	 * Checks the existence of files or directories.
-	 * @param string|array|\Traversable $files A filename, an array of files, or a \Traversable instance to check
+	 * @param string|array|Traversable $files A filename, an array of files, or a \Traversable instance to check
 	 * @return bool true if the file exists, false otherwise
 	 */
 	public static function exists($files) : bool {
@@ -57,7 +62,7 @@ abstract class FileSystem {
 
 	/**
 	 * Sets access and modification time of file.
-	 * @param string|array|\Traversable $files A filename, an array of files, or a \Traversable instance to create
+	 * @param string|array|Traversable $files A filename, an array of files, or a \Traversable instance to create
 	 * @param int $time The touch time as a Unix timestamp
 	 * @param int $atime The access time as a Unix timestamp
 	 * @throws IOException When touch fails
@@ -69,7 +74,7 @@ abstract class FileSystem {
 
 	/**
 	 * Removes files or directories.
-	 * @param string|array|\Traversable $files A filename, an array of files, or a \Traversable instance to remove
+	 * @param string|array|Traversable $files A filename, an array of files, or a \Traversable instance to remove
 	 * @throws IOException When removal fails
 	 */
 	public static function remove($files) : void {
@@ -79,7 +84,7 @@ abstract class FileSystem {
 
 	/**
 	 * Change mode for an array of files or directories.
-	 * @param string|array|\Traversable $files A filename, an array of files, or a \Traversable instance to change mode
+	 * @param string|array|Traversable $files A filename, an array of files, or a \Traversable instance to change mode
 	 * @param int $mode The new mode (octal)
 	 * @param int $umask The mode mask (octal)
 	 * @param bool $recursive Whether change the mod recursively or not
@@ -92,7 +97,7 @@ abstract class FileSystem {
 
 	/**
 	 * Change the owner of an array of files or directories.
-	 * @param string|array|\Traversable $files A filename, an array of files, or a \Traversable instance to change owner
+	 * @param string|array|Traversable $files A filename, an array of files, or a \Traversable instance to change owner
 	 * @param string $user The new owner user name
 	 * @param bool $recursive Whether change the owner recursively or not
 	 * @throws IOException When the change fail
@@ -104,7 +109,7 @@ abstract class FileSystem {
 
 	/**
 	 * Change the group of an array of files or directories.
-	 * @param string|array|\Traversable $files A filename, an array of files, or a \Traversable instance to change group
+	 * @param string|array|Traversable $files A filename, an array of files, or a \Traversable instance to change group
 	 * @param string $group The group name
 	 * @param bool $recursive Whether change the group recursively or not
 	 * @throws IOException When the change fail
@@ -152,7 +157,7 @@ abstract class FileSystem {
 	 * Mirrors a directory to another.
 	 * @param string $originDir The origin directory
 	 * @param string $targetDir The target directory
-	 * @param \Traversable $iterator A Traversable instance
+	 * @param Traversable $iterator A Traversable instance
 	 * @param array $options An array of boolean options
 	 *                   Valid options are:
 	 *                   - $options['override'] Whether to override an existing file on copy or not (see copy())
@@ -160,7 +165,7 @@ abstract class FileSystem {
 	 *                   - $options['delete'] Whether to delete files that are not in the source directory (defaults to false)
 	 * @throws IOException When file type is unknown
 	 */
-	public static function mirror($originDir, $targetDir, \Traversable $iterator = null, array $options = []) : void {
+	public static function mirror($originDir, $targetDir, Traversable $iterator = null, array $options = []) : void {
 		self::initialize();
 		self::$fs->mirror($originDir, $targetDir, $iterator, $options);
 	}
@@ -207,9 +212,9 @@ abstract class FileSystem {
 	/**
 	 * Gets mime information about a file
 	 * @param string $filePath path to examined file
-	 * @throws \LogicException
 	 * @throws \Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException
 	 * @throws \Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException
+	 * @throws LogicException
 	 * @return string file's mime type, empty string if cannot detect
 	 */
 	public static function getMimeType($filePath) : string {
@@ -234,8 +239,8 @@ abstract class FileSystem {
 	public static function cleanDirectory($directoryPath, array $filesNamesToOmit = []) : int {
 		$count = 0;
 
-		foreach (new \DirectoryIterator($directoryPath) as $file) {
-			if ($file->isFile() && !\in_array($file->getFilename(), $filesNamesToOmit, false)) {
+		foreach (new DirectoryIterator($directoryPath) as $file) {
+			if ($file->isFile() && !in_array($file->getFilename(), $filesNamesToOmit, false)) {
 				try {
 					self::remove($file->getPathname());
 				} catch (IOExceptionInterface $e) {

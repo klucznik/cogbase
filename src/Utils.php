@@ -1,4 +1,6 @@
-<?php namespace Cog;
+<?php
+
+namespace Cog;
 
 use DateTime;
 
