@@ -6,6 +6,7 @@ use League\Uri\Components\Query;
 use League\Uri\Http as HttpUri;
 use League\Uri\Http;
 use League\Uri\UriException;
+use UnexpectedValueException;
 
 abstract class CurrentUri {
 
@@ -45,7 +46,7 @@ abstract class CurrentUri {
 
 	/**
 	 * This should be the first call to initialize all the static variables
-	 * @throws \UnexpectedValueException
+	 * @throws UnexpectedValueException
 	 * @return void
 	 */
 	public static function initialize() : void {
@@ -61,7 +62,7 @@ abstract class CurrentUri {
 
 			// Ensure both are set, or we'll have to abort
 			if (!Path::$scriptFilename || !Path::$scriptName) {
-				throw new \UnexpectedValueException('Error on self::initialize() - scriptFilename or scriptName was not set');
+				throw new UnexpectedValueException('Error on self::initialize() - scriptFilename or scriptName was not set');
 			}
 
 			// Setup queryString
@@ -74,7 +75,7 @@ abstract class CurrentUri {
 			self::$pathInfo = $uri->getPath();
 
 			if (StringUtils::beginsWith(self::$pathInfo, Path::$scriptName)) { //clean up path
-				self::$pathInfo = substr(self::$pathInfo, \strlen(Path::$scriptName));
+				self::$pathInfo = substr(self::$pathInfo, strlen(Path::$scriptName));
 			}
 
 			if (self::$pathInfo === false) {

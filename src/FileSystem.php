@@ -3,11 +3,10 @@
 namespace Cog;
 
 use DirectoryIterator;
-use LogicException;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
+use Symfony\Component\Mime\MimeTypes;
 use Traversable;
 
 abstract class FileSystem {
@@ -212,16 +211,13 @@ abstract class FileSystem {
 	/**
 	 * Gets mime information about a file
 	 * @param string $filePath path to examined file
-	 * @throws \Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException
-	 * @throws \Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException
-	 * @throws LogicException
 	 * @return string file's mime type, empty string if cannot detect
 	 */
 	public static function getMimeType($filePath) : string {
 		$toReturn = '';
 
-		$mimeGuesser = MimeTypeGuesser::getInstance();
-		$mime = $mimeGuesser->guess($filePath);
+		$mimeTypes = new MimeTypes();
+		$mime = $mimeTypes->guessMimeType($filePath);
 
 		if ($mime !== '' && $mime !== false) {
 			$toReturn = $mime;
