@@ -2,10 +2,8 @@
 
 namespace Cog;
 
-use League\Uri\Components\Query;
-use League\Uri\Http as HttpUri;
 use League\Uri\Http;
-use League\Uri\UriException;
+use League\Uri\QueryString;
 use UnexpectedValueException;
 
 abstract class CurrentUri {
@@ -50,11 +48,7 @@ abstract class CurrentUri {
 	 * @return void
 	 */
 	public static function initialize() : void {
-		$uri = null;
-
-		try {
-			$uri = HttpUri::createFromServer($_SERVER);
-		} catch (UriException $e) {}
+		$uri = Http::createFromServer($_SERVER);
 
 		if ($uri instanceof Http) {
 			self::$scheme = $uri->getScheme();
@@ -67,9 +61,7 @@ abstract class CurrentUri {
 
 			// Setup queryString
 			self::$queryString = $uri->getQuery();
-
-			$query = new Query(self::$queryString);
-			self::$queryArray = $query->getPairs();
+			self::$queryArray = QueryString::parse(self::$queryString);
 
 			// Setup path
 			self::$pathInfo = $uri->getPath();

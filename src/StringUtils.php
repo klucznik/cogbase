@@ -14,7 +14,7 @@ abstract class StringUtils {
 	 * @return string | null the first character, or null
 	 */
 	final public static function firstCharacter($string): ?string {
-		if (mb_strlen($string) > 0) {
+		if ($string !== '') {
 			return mb_substr($string, 0, 1);
 		}
 		return null;
@@ -26,7 +26,7 @@ abstract class StringUtils {
 	 * @return string | null the last character, or null
 	 */
 	final public static function lastCharacter($string): ?string  {
-		if (mb_strlen($string) > 0) {
+		if ($string !== '') {
 			return mb_substr($string, -1);
 		}
 		return null;
@@ -39,7 +39,7 @@ abstract class StringUtils {
 	 * @return boolean
 	 */
 	final public static function beginsWith($haystack, $needle): bool {
-		return (0 === mb_strpos($haystack, $needle));
+		return (mb_strpos($haystack, $needle) === 0);
 	}
 
 	/**

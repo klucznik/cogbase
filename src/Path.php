@@ -126,8 +126,8 @@ abstract class Path {
 	 * @return string | null
 	 */
 	protected static function firstCharacter($string): ?string {
-		if (strlen($string) > 0) {
-			return $string[0];
+		if ($string !== '') {
+			return substr($string, 0, 1);
 		}
 		return null;
 	}
@@ -137,9 +137,8 @@ abstract class Path {
 	 * @return string | null
 	 */
 	protected static function lastCharacter($string): ?string {
-		$length = strlen($string);
-		if ($length > 0) {
-			return $string[$length - 1];
+		if ($string !== '') {
+			return substr($string, -1);
 		}
 		return null;
 	}
